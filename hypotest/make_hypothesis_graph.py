@@ -16,13 +16,14 @@ nodes = [
     (0, {'name': 'pro-inflammatory cytokines'}),
     (1, {'name': 'mechanical stimuli'}),
     (2, {'name': 'chondrocytes'}),
-    (3, {'name': 'cell viability'}),
-    (4, {'name': 'disruption of macromolecular content'}),
-    (5, {'name': 'diminuition of hydraulic pressure'}),
-    (6, {'name': 'mechanical overloading'}),
-    (7, {'name': 'cartilage thnining'}),
-    (8, {'name': 'reduced range of joint angles'}),
-    (9, {'name': 'reduced range of joint moments'}),
+    (3, {'name': 'hyperthropy'}),
+    (4, {'name': 'cell viability'}),
+    (5, {'name': 'disruption of macromolecular content'}),
+    (6, {'name': 'diminuition of hydraulic pressure'}),
+    (7, {'name': 'mechanical overloading'}),
+    (8, {'name': 'cartilage thinning'}),
+    (9, {'name': 'reduced range of joint angles'}),
+    (10, {'name': 'reduced range of joint moments'}),
 ]
 
 
@@ -30,11 +31,14 @@ edges = [
     (0, 2),
     (1, 2),
     (2, 3),
-    (3, 4),
+    (2, 4),
+    (3, 5),
     (4, 5),
     (5, 6),
+    (6, 7),
     (7, 8),
-    (7, 9)
+    (8, 9),
+    (8, 10)
 ]
 
 
