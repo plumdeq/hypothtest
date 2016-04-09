@@ -11,5 +11,10 @@ not been evidenced
 
 
 def find_missing_nodes(H):
-    """Find all non-evidenced nodes"""
+    """
+    (hypothgraph) -> iter of missing nodes
+
+    Find all non-evidenced nodes
+
+    """
     return (n for (n, d) in H.nodes_iter(data=True) if d["evidenced"] != 1)

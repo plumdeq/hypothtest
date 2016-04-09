@@ -16,3 +16,10 @@ def assert_evidence(g, node):
     g.node[node]["evidenced"] = 1
 
     return g
+
+
+def unassert_evidence(g, node):
+    """Unassert evidence for node"""
+    g.node[node]["evidenced"] = -1
+
+    return g
