@@ -6,10 +6,13 @@ Evaluate confidence in the given causal chain
 
 """
 from operator import itemgetter
+import networkx as nx
 
 from hypotest.study_planning import find_missing_nodes
 from hypotest.assert_evidence import assert_evidence, unassert_evidence
 from hypotest.utils import find_node_name
+
+MIN_CONFIDENCE = -100
 
 
 def default_fn_importance(H, node):
@@ -21,52 +24,88 @@ def default_fn_importance(H, node):
         H.node[node]["computed importance factor"]
 
 
-def evaluate_confidence_for_causal_chain(H, causal_chain,
-                                         fn_importance=default_fn_importance):
+def path_confidence(H, path, fn_importance=default_fn_importance):
     """
-    (graph, path, func) -> (int)
-
-    Propage confidence factor for a given causal chain
+    (hypothgraph, path) -> float
 
     H
         hypothesis graph
-
-    causal_chain
-        a path - list of nodes
+    path
+        list of nodes
 
     fn_importance (optional)
         function which chooses how to compute confidence for one node
 
-
     """
-    # if no evidence then confidence is the lowest
-    if not causal_chain:
-        return -100
+    if not path:
+        return MIN_CONFIDENCE
 
-    confidence_measures = [fn_importance(H, node) for node in causal_chain]
+    confidence_measures = [fn_importance(H, node) for node in path]
 
     return sum(confidence_measures)
 
 
-def difference_importance(H, causal_chain, log=False):
+def paths_confidence(H, source, target,
+                     fn_importance=default_fn_importance,
+                     log=False):
+    """
+    (graph, source, target, func) -> (int)
+
+    Propagate confidence factor for given source and target nodes
+
+    H
+        hypothesis graph
+
+    source, target
+        nodes
+
+    """
+    # if no evidence then confidence is the lowest
+    if source is None or target is None:
+        raise Exception("You should provide source and target")
+
+    # compute all paths between source and target
+    paths = nx.all_shortest_paths(H, source, target)
+
+    confidence_measures = [path_confidence(H, path, fn_importance=fn_importance)
+                           for path in paths]
+
+    if log:
+        print("confidence measures are {}".format(confidence_measures))
+
+    return sum(confidence_measures)/float(len(confidence_measures))
+
+
+def difference_importance(H, source, target, candidate_evidenced_node,
+                          fn_importance=default_fn_importance, log=False):
     """
     (graph, path) -> float
 
-    Assess the importance of evidenced facts in the causal chain
+    Compute difference in confidence value with or without candidate evidenced
+    node
 
     """
-    confidence_with = evaluate_confidence_for_causal_chain(H, causal_chain)
-    confidence_without = evaluate_confidence_for_causal_chain(H, [])
+    confidence_without = paths_confidence(H, source, target,
+                                          fn_importance=fn_importance)
+
+    assert_evidence(H, candidate_evidenced_node)
+    confidence_with = paths_confidence(H, source, target,
+                                       fn_importance=fn_importance)
+    unassert_evidence(H, candidate_evidenced_node)
+
+    gain_in_confidence = abs(confidence_with - confidence_without)
 
     if log:
         print("missing nodes {}".format(list(find_missing_nodes(H))))
+        print("candidate evidenced node {}".format(candidate_evidenced_node))
         print("with confidence - {}, without - {}".format(confidence_with,
                                                           confidence_without))
+        print("gain in confidence: {}".format(gain_in_confidence))
 
-    return confidence_with - confidence_without
+    return gain_in_confidence
 
 
-def most_informative_missing_node(H, causal_chain,
+def most_informative_missing_node(H, source, target,
                                   fn_importance=default_fn_importance):
     """
     (hypothgraph, path) -> missing_node_id
@@ -80,10 +119,8 @@ def most_informative_missing_node(H, causal_chain,
 
     for missing_node in missing_nodes:
         # evidence him and compute overall confidence
-        assert_evidence(H, missing_node)
         most_informative[find_node_name(missing_node, H)] = \
-            difference_importance(H, causal_chain, log=True)
-        unassert_evidence(H, missing_node)
+            difference_importance(H, source, target, missing_node)
 
     sorted_most_informative = sorted(most_informative.items(),
                                      key=itemgetter(1),

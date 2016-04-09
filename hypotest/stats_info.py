@@ -7,11 +7,12 @@ Print all important statistical information on the hypothesis
 """
 from hypotest.study_planning import find_missing_nodes
 from hypotest.assign_weights import compute_importance_weights
+from hypotest.confidence_propagation import most_informative_missing_node
 
 
-def print_stats(H):
+def print_stats(H, source, target):
     """
-    (hypothgraph) -> io stream
+    (hypothgraph, source, target) -> io stream
 
     Prints stats info about the hypothesis graph, i.e., importance factors for
     nodes, number of nodes, missing nodes, and what is missing for the
@@ -38,6 +39,13 @@ def print_stats(H):
     for n, d in sorted_importance:
         print("{} importance: {}".format(d["name"],
                                          d["computed importance factor"]))
+    most_informatives = most_informative_missing_node(H, source, target)
+
+    print("\n====================")
+    print("Nodes informativeness")
+    print("====================")
+    for name, informativeness in most_informatives:
+        print("{} informativenss: {}".format(name, informativeness))
 
 
 def sort_importance_factor(H):
