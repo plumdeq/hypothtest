@@ -12,6 +12,9 @@ def convert_visjs(H):
     (hypograph) -> (nodes_vis_js, edges_vis_js)
 
     """
+    # recompute colors
+    H = compute_colors(H)
+
     # dict1(**dict2) will create a new dictionary with values updated from dict2
     nodes_vis_js = (dict(id=n, **vis_js_key_names(d))
                     for (n, d) in H.nodes_iter(data=True))
@@ -35,3 +38,20 @@ def vis_js_key_names(d):
     """
     d["value"] = d.pop("computed importance factor")
     return d.copy()
+
+
+def compute_colors(H):
+    """
+    hypograph -> hypograph with colors based on evidenced
+
+    not evidenced - "color: red"
+    evidenced - "color: green"
+
+    """
+    for (n, d) in H.nodes_iter(data=True):
+        if d['evidenced'] == 1:
+            d['color'] = 'green'
+        else:
+            d['color'] = 'red'
+
+    return H

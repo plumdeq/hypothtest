@@ -6,4 +6,7 @@ setup(name='hypotest',
       author='Asan Agibetov',
       author_email='asan.agibetov@gmail.com',
       url='plumdeq.xyz',
+      install_requires=[
+          'networkx'
+      ]
       )
