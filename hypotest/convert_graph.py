@@ -12,6 +12,8 @@ def convert_visjs(H):
     (hypograph) -> (nodes_vis_js, edges_vis_js)
 
     """
+    # make sure that no mutable operation is perfomed on the original graph
+    H = H.copy()
     # recompute colors
     H = compute_colors(H)
 

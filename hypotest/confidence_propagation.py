@@ -8,7 +8,7 @@ Evaluate confidence in the given causal chain
 from operator import itemgetter
 import networkx as nx
 
-from hypotest.study_planning import find_missing_nodes
+from hypotest.utils import find_missing_nodes
 from hypotest.assert_evidence import assert_evidence, unassert_evidence
 
 MIN_CONFIDENCE = -100
@@ -60,11 +60,19 @@ def paths_confidence(H, source, target,
 
     """
     # if no evidence then confidence is the lowest
-    if source is None or target is None:
+    if (source is None or target is None):
         raise Exception("You should provide source and target")
 
+    # return 0 for undefined confidence if no path
+    if not nx.has_path(H, source, target):
+        return 0
+
     # compute all paths between source and target
-    paths = nx.all_shortest_paths(H, source, target)
+    try:
+        paths = nx.all_shortest_paths(H, source, target)
+    except nx.NetworkXNoPath:
+        print("No path between {} and {}".format(source, target))
+        return MIN_CONFIDENCE
 
     confidence_measures = [path_confidence(H, path, fn_importance=fn_importance)
                            for path in paths]

@@ -77,7 +77,7 @@ def set_causal_chain_endpoints(H):
     Sets two nodes as endpoints of the causal chain
 
     """
-    s, t = random.randint(0, 10), random.randint(0, 10)
+    s, t = random_endpoints(H, 0, 10)
 
     for n in H.nodes_iter():
         if n == s or n == t:
@@ -86,3 +86,20 @@ def set_causal_chain_endpoints(H):
             H.node[n]['causal_endpoint'] = 0
 
     return H
+
+
+def random_endpoints(H, min, max, s=None, t=None):
+    """
+    (hypeothgraph, min, max) -> (rand(min, max), rand(min, max))
+
+    Makes sure then the same nodes are not selected, and that the path exists
+
+    """
+    s = s or random.randint(min, max)
+    t = t or random.randint(min, max)
+
+    if s == t or not nx.has_path(H, s, t):
+        return random_endpoints(H, min, max)
+
+    else:
+        return (s, t)
