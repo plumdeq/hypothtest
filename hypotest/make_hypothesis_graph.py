@@ -10,6 +10,7 @@ function which builds the graph.
 
 """
 import networkx as nx
+import random
 
 
 nodes = [
@@ -57,6 +58,9 @@ def make_hypothesis_graph():
 def fill_in_default_values(g):
     """Fill in default values, i.e., evidenced=-1 for nodes, and name='causes'
     for edges"""
+    # choose at random end points of the causal chain
+    g = set_causal_chain_endpoints(g)
+
     for (n, d) in g.nodes_iter(data=True):
         d["evidenced"] = -1
 
@@ -64,3 +68,21 @@ def fill_in_default_values(g):
         d["label"] = "causes"
 
     return g
+
+
+def set_causal_chain_endpoints(H):
+    """
+    hypograph -> hypograph with attr set for two nodes
+
+    Sets two nodes as endpoints of the causal chain
+
+    """
+    s, t = random.randint(0, 10), random.randint(0, 10)
+
+    for n in H.nodes_iter():
+        if n == s or n == t:
+            H.node[n]['causal_endpoint'] = 1
+        else:
+            H.node[n]['causal_endpoint'] = 0
+
+    return H

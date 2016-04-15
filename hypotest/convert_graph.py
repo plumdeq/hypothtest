@@ -48,10 +48,19 @@ def compute_colors(H):
     evidenced - "color: green"
 
     """
+    clr_unevidenced = 'rgba(194, 91, 91'
+    clr_evidenced = 'rgba(91, 194, 92'
+
     for (n, d) in H.nodes_iter(data=True):
         if d['evidenced'] == 1:
-            d['color'] = 'green'
+            d['color'] = clr_evidenced
         else:
-            d['color'] = 'red'
+            d['color'] = clr_unevidenced
+
+        # opaque if endpoints, semi-transparent otherwise
+        if d['causal_endpoint'] == 1:
+            d['color'] = ''.join((d['color'], ', 1)'))
+        else:
+            d['color'] = ''.join((d['color'], ', 0.5)'))
 
     return H
