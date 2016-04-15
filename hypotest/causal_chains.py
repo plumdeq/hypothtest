@@ -24,5 +24,5 @@ def all_causal_chains(source_name, target_name, g):
 def find_node(node_name, g):
     """Go through the attributes and find the node with the given name"""
     for n, d in g.nodes_iter(data=True):
-        if d["name"] == node_name:
+        if d["label"] == node_name:
             return n

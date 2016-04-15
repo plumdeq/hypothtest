@@ -10,7 +10,6 @@ import networkx as nx
 
 from hypotest.study_planning import find_missing_nodes
 from hypotest.assert_evidence import assert_evidence, unassert_evidence
-from hypotest.utils import find_node_name
 
 MIN_CONFIDENCE = -100
 
@@ -108,7 +107,7 @@ def difference_importance(H, source, target, candidate_evidenced_node,
 def most_informative_missing_node(H, source, target,
                                   fn_importance=default_fn_importance):
     """
-    (hypothgraph, path) -> missing_node_id
+    (hypothgraph, source, target) -> [(node_id, delta_metric), ...]
 
     Simulate finding an evidence for one missing node, and assess the difference
     importance
@@ -119,7 +118,7 @@ def most_informative_missing_node(H, source, target,
 
     for missing_node in missing_nodes:
         # evidence him and compute overall confidence
-        most_informative[find_node_name(missing_node, H)] = \
+        most_informative[missing_node] = \
             difference_importance(H, source, target, missing_node)
 
     sorted_most_informative = sorted(most_informative.items(),

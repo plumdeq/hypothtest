@@ -13,17 +13,17 @@ import networkx as nx
 
 
 nodes = [
-    (0, {'name': 'pro-inflammatory cytokines'}),
-    (1, {'name': 'mechanical stimuli'}),
-    (2, {'name': 'chondrocytes'}),
-    (3, {'name': 'hyperthropy'}),
-    (4, {'name': 'cell viability'}),
-    (5, {'name': 'disruption of macromolecular content'}),
-    (6, {'name': 'diminuition of hydraulic pressure'}),
-    (7, {'name': 'mechanical overloading'}),
-    (8, {'name': 'cartilage thinning'}),
-    (9, {'name': 'reduced range of joint angles'}),
-    (10, {'name': 'reduced range of joint moments'}),
+    (0, {'label': 'pro-inflammatory cytokines'}),
+    (1, {'label': 'mechanical stimuli'}),
+    (2, {'label': 'chondrocytes'}),
+    (3, {'label': 'hyperthropy'}),
+    (4, {'label': 'cell viability'}),
+    (5, {'label': 'disruption of macromolecular content'}),
+    (6, {'label': 'diminuition of hydraulic pressure'}),
+    (7, {'label': 'mechanical overloading'}),
+    (8, {'label': 'cartilage thinning'}),
+    (9, {'label': 'reduced range of joint angles'}),
+    (10, {'label': 'reduced range of joint moments'}),
 ]
 
 
@@ -61,6 +61,6 @@ def fill_in_default_values(g):
         d["evidenced"] = -1
 
     for (s, t, d) in g.edges_iter(data=True):
-        d["name"] = "causes"
+        d["label"] = "causes"
 
     return g

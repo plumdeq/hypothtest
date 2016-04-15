@@ -23,4 +23,4 @@ def memo(f):
 
 def find_node_name(node_id, g):
     """Go through the attributes and find the node with the given name"""
-    return g.node[node_id]["name"]
+    return g.node[node_id]["label"]
