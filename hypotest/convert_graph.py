@@ -5,6 +5,7 @@ Convert graph for graph visualization packages
 :author: Asan Agibetov
 
 """
+import hypotest
 
 
 def convert_visjs(H):
@@ -42,6 +43,23 @@ def vis_js_key_names(d):
     return d.copy()
 
 
+def from_vis_js_key_names(d):
+    """
+    dict -> dict
+
+    Convert key names from vis_js default key names, i.e. "value" for the size
+    of the node. Delete id key name, otherwise it will be duplicated
+
+    mydict[new_key] = mydict.pop(old_key) | change key name
+
+    """
+    d["computed importance factor"] = d.pop("value")
+    d_copy = d.copy()
+    d_copy.pop('id', None)
+
+    return d_copy
+
+
 def compute_colors(H):
     """
     hypograph -> hypograph with colors based on evidenced
@@ -66,3 +84,27 @@ def compute_colors(H):
             d['color'] = ''.join((d['color'], ', 0.5)'))
 
     return H
+
+
+def convert_from_visjs_nodes(nodes):
+    """
+    ([node_visjs_dict, ...]) -> ([node_id, dict])
+
+    """
+    return ([d['id'], dict(**from_vis_js_key_names(d))]
+            for d in nodes)
+
+
+def convert_from_visjs_graph(nodes):
+    """
+    ([node_visjs_dict, ...]) -> hypothgraph
+
+    """
+    H1 = hypotest.H.copy()
+
+    nodes = convert_from_visjs_nodes(nodes)
+
+    # update nodes of the hypothgraph
+    H1.add_nodes_from(nodes)
+
+    return H1
