@@ -6,7 +6,7 @@ For a given configuration of a hypothesis, try the following experiments:
 
 1) Generalization of a hypothesis, i.e. grow one or two end (s) of the boundary
    and see how the confidence changes
-2) For given unevidenced nodes, find the best endpoints (given the confidence
+2) For given evidenced nodes, find the best endpoints (given the confidence
    function)
 3) For a given threshold of confidence, find the best hypothesis configuration
 
@@ -19,6 +19,7 @@ from operator import attrgetter
 
 from hypotest import utils
 from hypotest import confidence_propagation as cp
+from hypotest import assert_endpoints
 
 Path = namedtuple('Path', ['confidence', 'conf_delta', 'distance',
                            'dist_delta'])
@@ -39,6 +40,9 @@ def generalize_directional(H, source, target, direction='backwards'):
     confidence, and the delta increase/decrese
 
     """
+    # make all experiments on a copy of the hypothesis graph
+    H = H.copy()
+
     farther_nodes, from_node = nx.algorithms.ancestors, source
     if direction != 'backwards':
         farther_nodes, from_node = nx.algorithms.descendants, target
@@ -54,6 +58,9 @@ def generalize_directional(H, source, target, direction='backwards'):
         if direction != 'backwards':
             new_source, new_target = utils.sort_endpoints(H, farther_node,
                                                           source)
+
+        # assign the new endpoints
+        assert_endpoints(H, new_source, new_target)
 
         new_confidence = cp.paths_confidence(H, new_source, new_target)
         new_distance = nx.shortest_path_length(H, new_source, new_target)
@@ -91,6 +98,7 @@ def generalize(H):
     # construct the same named tuple with the current state of the hypothesis
     current_confidence = cp.paths_confidence(H, source, target)
     current_distance = nx.shortest_path_length(H, source, target)
+
     stats = {
         'confidence': current_confidence,
         'distance': current_distance,
