@@ -15,6 +15,7 @@ For a given configuration of a hypothesis, try the following experiments:
 """
 import networkx as nx
 from collections import namedtuple
+from operator import attrgetter
 
 from hypotest import utils
 from hypotest import confidence_propagation as cp
@@ -79,18 +80,59 @@ def generalize_directional(H, source, target, direction='backwards'):
 
 def generalize(H):
     """
-    (hypothgraph) -> (source, target, increase in nodes, new confidence, delta
-                      confidence)
+    (hypothgraph) -> list of stats of bi-directional generalization
 
     We identify endpoints, and then we try to *grow* the boundary (predecessors
     for the source, successors for target) and recompute the confidence function
 
     """
-    b1, b2 = utils.find_causal_endpoints(H)
-    # identify which is source, which is target
-    source, target = (b1, b2) if b1 < b2 else (b2, b1)
+    source, target = utils.find_causal_endpoints(H)
 
-    preds = H.predecessors(source)
-    succs = H.successors(target)
+    # construct the same named tuple with the current state of the hypothesis
+    current_confidence = cp.paths_confidence(H, source, target)
+    current_distance = nx.shortest_path_length(H, source, target)
+    stats = {
+        'confidence': current_confidence,
+        'distance': current_distance,
+        'conf_delta': 0,
+        'dist_delta': 0
+    }
 
-    return (preds, succs)
+    current_state = [Path(**stats)]
+
+    # generalize backwards anf forward, sort according to the delta distance
+    backwards_gen = generalize_directional(H, source, target)
+    forward_gen = generalize_directional(H, source, target,
+                                         direction='forward')
+
+    back_gen, forward_gen = [extract_paths_and_sort(backwards_gen),
+                             extract_paths_and_sort(forward_gen)]
+
+    return back_gen + current_state + forward_gen
+
+
+# Utils
+def extract_paths_and_sort(generalization_obj, key=attrgetter('dist_delta')):
+    """
+    generalization is an object, extract list and sort on *dist_delta*
+
+    """
+    paths = [path for endpoints, path in generalization_obj.items()]
+
+    return sorted(paths, key=key)
+
+
+def generalization_data_for_plot(H):
+    """
+    Returns then necessary data for the generalization
+
+    xs - delta in distance
+    ys - confidence
+
+    """
+    sorted_paths = generalize(H)
+
+    xs = [attrgetter('dist_delta')(path) for path in sorted_paths]
+    ys = [attrgetter('confidence')(path) for path in sorted_paths]
+
+    return xs, ys
