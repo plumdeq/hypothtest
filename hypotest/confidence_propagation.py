@@ -8,7 +8,7 @@ Evaluate confidence in the given causal chain
 from operator import itemgetter
 import networkx as nx
 
-from hypotest.utils import find_missing_nodes
+from hypotest.utils import find_missing_nodes, sort_endpoints
 from hypotest.assert_evidence import assert_evidence, unassert_evidence
 
 MIN_CONFIDENCE = -100
@@ -51,6 +51,8 @@ def paths_confidence(H, source, target,
     (graph, source, target, func) -> (int)
 
     Propagate confidence factor for given source and target nodes
+    Please note, that we make sure that the source and target are sorted
+    topologically
 
     H
         hypothesis graph
@@ -62,6 +64,9 @@ def paths_confidence(H, source, target,
     # if no evidence then confidence is the lowest
     if (source is None or target is None):
         raise Exception("You should provide source and target")
+
+    # re-order topologically
+    source, target = sort_endpoints(H, source, target)
 
     # return 0 for undefined confidence if no path
     if not nx.has_path(H, source, target):
