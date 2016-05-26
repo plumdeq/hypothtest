@@ -60,7 +60,7 @@ def generalize_directional(H, source, target, direction='backwards'):
                                                           source)
 
         # assign the new endpoints
-        assert_endpoints(H, new_source, new_target)
+        assert_endpoints.assert_endpoints(H, new_source, new_target)
 
         new_confidence = cp.paths_confidence(H, new_source, new_target)
         new_distance = nx.shortest_path_length(H, new_source, new_target)
@@ -140,7 +140,8 @@ def generalization_data_for_plot(H):
     """
     sorted_paths = generalize(H)
 
-    xs = [attrgetter('dist_delta')(path) for path in sorted_paths]
-    ys = [attrgetter('confidence')(path) for path in sorted_paths]
+    dist_deltas = [attrgetter('dist_delta')(path) for path in sorted_paths]
+    confidences = [attrgetter('confidence')(path) for path in sorted_paths]
+    conf_deltas = [attrgetter('conf_delta')(path) for path in sorted_paths]
 
-    return xs, ys
+    return dist_deltas, confidences, conf_deltas

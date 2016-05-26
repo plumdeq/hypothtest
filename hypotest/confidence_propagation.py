@@ -8,7 +8,8 @@ Evaluate confidence in the given causal chain
 from operator import itemgetter
 import networkx as nx
 
-from hypotest.utils import find_missing_nodes, sort_endpoints
+from hypotest.utils import (find_missing_nodes, sort_endpoints,
+                            find_causal_endpoints)
 from hypotest.assert_evidence import assert_evidence, unassert_evidence
 
 MIN_CONFIDENCE = -100
@@ -117,7 +118,7 @@ def difference_importance(H, source, target, candidate_evidenced_node,
     return gain_in_confidence
 
 
-def most_informative_missing_node(H, source, target,
+def most_informative_missing_node(H, source=None, target=None,
                                   fn_importance=default_fn_importance):
     """
     (hypothgraph, source, target) -> [(node_id, delta_metric), ...]
@@ -126,6 +127,9 @@ def most_informative_missing_node(H, source, target,
     importance
 
     """
+    if not source or not target:
+        source, target = find_causal_endpoints(H)
+
     missing_nodes = find_missing_nodes(H)
     most_informative = {}
 
