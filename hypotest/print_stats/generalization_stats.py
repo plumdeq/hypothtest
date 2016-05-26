@@ -15,6 +15,7 @@ import pandas as pd
 from hypotest import utils as hypotest_utils
 from hypotest.print_stats import utils as stats_utils
 from hypotest.assert_evidence import assert_evidence, unassert_evidence
+from hypotest import assert_endpoints
 from hypotest.inference import generalization
 
 
@@ -111,6 +112,73 @@ def convert_to_dataframe(H, endpoints=None, evidenced_nodes=None):
             series_size = len(stats_obj['confidences'])
 
         stats_obj['unevidenced_node'] = [H.node[node_id]['label']] * \
+            series_size
+
+        # first time creating the dataframe
+        if final_df is None:
+            final_df = pd.DataFrame(stats_obj)
+        else:
+            df = pd.DataFrame(stats_obj)
+            final_df = pd.concat([final_df, df])
+            final_df.reset_index()
+
+    return final_df
+
+
+def generalization_different_evidenced_nodes(H, endpoints, evidenced_list,
+                                             evidenced_list_labels):
+    """
+    (hypothgraph, (source, target),
+        [[evidenced1, ....], ...], [label_list1, ...) -> stats_obj
+
+    Constructs hypothesis configuration, one for each from the
+    evidenced_nodes_list, and compares the generalization scores for each of
+    them
+
+    """
+    source, target = endpoints
+    hypoth_confs = [H.copy() for _ in range(len(evidenced_list))]
+
+    stats_evidenced = {}
+
+    # evidence all the needed nodes
+    for hypoth_conf, evidenced_nodes, label in zip(hypoth_confs,
+                                                   evidenced_list,
+                                                   evidenced_list_labels):
+        assert_endpoints.assert_endpoints(hypoth_conf, source, target)
+        for evidenced_node in evidenced_nodes:
+            assert_evidence(hypoth_conf, evidenced_node)
+
+        stats_evidenced[label] = \
+            generalization.generalization_data_for_plot(hypoth_conf)
+
+    return stats_evidenced
+
+
+# CAN BE REFACTOR SO THAT IT REUSES PREVIOUS FUNCTION FOR DATAFRAME CONVERSION
+#
+def generalization_evidenced_df(H, endpoints, evidenced_list,
+                                evidenced_list_labels):
+    """
+    Arranges statistics for differenct generalization under different hypothesis
+    configurations in a Pandas dataframe
+
+    """
+    evidenced_obj = generalization_different_evidenced_nodes(
+        H, endpoints, evidenced_list, evidenced_list_labels)
+
+    # we need to duplicate node_id for all other values, we identify the length
+    # of other arrays only ones
+    series_size = None
+
+    # final dataframe
+    final_df = None
+
+    for label, stats_obj in evidenced_obj.items():
+        if series_size is None:
+            series_size = len(stats_obj['confidences'])
+
+        stats_obj['evidenced configuration'] = [label] * \
             series_size
 
         # first time creating the dataframe
