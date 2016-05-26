@@ -6,7 +6,7 @@ cycler==0.10.0
 decorator==4.0.9
 functools32==3.2.3.post2
 gnureadline==6.3.3
-hypotest==1.0
+-e git+git@bitbucket.org:plumdeq/hypothtest-graph.git@b4b853e5c4d6adc750d49c39acf2a3e8b6e9a8a6#egg=hypotest
 ipykernel==4.3.1
 ipython==4.1.2
 ipython-genutils==0.1.0
@@ -25,6 +25,7 @@ nbformat==4.0.1
 networkx==1.11
 notebook==4.1.0
 numpy==1.11.0
+pandas==0.18.1
 path.py==8.1.2
 pexpect==4.0.1
 pickleshare==0.6

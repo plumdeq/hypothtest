@@ -134,8 +134,8 @@ def generalization_data_for_plot(H):
     """
     Returns then necessary data for the generalization
 
-    xs - delta in distance
-    ys - confidence
+    delta in distance, confidence, delta in confidence
+
 
     """
     sorted_paths = generalize(H)
@@ -144,4 +144,10 @@ def generalization_data_for_plot(H):
     confidences = [attrgetter('confidence')(path) for path in sorted_paths]
     conf_deltas = [attrgetter('conf_delta')(path) for path in sorted_paths]
 
-    return dist_deltas, confidences, conf_deltas
+    stats = {
+        'dist_deltas': dist_deltas,
+        'confidences': confidences,
+        'conf_deltas': conf_deltas
+    }
+
+    return stats
