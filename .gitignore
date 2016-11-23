@@ -1,0 +1,9 @@
+*pyc
+build/*
+**/__pycache__
+**/*egg*
+**/.cache
+ontology/*
+**/.ropeproject
+catalog*xml
+ontology/benchmark/*
