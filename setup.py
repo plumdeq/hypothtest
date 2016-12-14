@@ -1,8 +1,8 @@
 from setuptools import setup
 
-setup(name='hypotest',
+setup(name='hypotest-conf-propagation',
       version='1.0',
-      description='Hypothesis testing prototype',
+      description='Hypothesis confidence propagation',
       author='Asan Agibetov',
       author_email='asan.agibetov@gmail.com',
       url='plumdeq.xyz',
