@@ -30,7 +30,7 @@ import pytest
 # uses grontocrawler to produce a digraph
 @pytest.fixture
 def get_digraph():
-    return sample_hypothgraph.get_digraph()
+    return sample_hypothgraph.sample_digraph()
 
 
 def test_setup_hypothgraph(get_digraph):

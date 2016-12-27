@@ -15,7 +15,7 @@ from grontocrawler.graph import produce_graph
 
 
 # Send the sample digraph from a sample hypothesis ontology
-def get_digraph():
+def sample_digraph():
     return produce_graph.produce_graph(g, options=['existential-arcs'])
 
 
