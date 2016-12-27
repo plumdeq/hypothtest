@@ -9,6 +9,7 @@
 # `grontocrawler` and convert it to a hypograph with updated meta-data
 
 from hypotest.setup_hypothgraph import utils
+from hypotest.assign_weights import compute_importance_weights
 
 from grontocrawler.sample_ontology.hypo_ontology import g
 from grontocrawler.graph import produce_graph
@@ -21,7 +22,13 @@ def sample_digraph():
 
 # Convert networkx graph into a hypograph with causality meta-data updated
 def make_hypothgraph(digraph=None):
-    digraph = digraph.copy() or get_digraph()
+    if digraph:
+        digraph = digraph.copy()
+    else:
+        digraph = sample_digraph()
+
+    # Add missing values (e.g., 'evidenced')
+    digraph = utils.fill_missing_values(digraph)
 
     source, target = utils.random_endpoints(digraph)
 
@@ -29,8 +36,13 @@ def make_hypothgraph(digraph=None):
     for node in digraph.nodes_iter():
         if node == source:
             digraph.node[node]['hypo_source'] = 1
+            digraph.node[node]['causal_endpoint'] = 1
 
         if node == target:
             digraph.node[node]['hypo_target'] = 1
+            digraph.node[node]['causal_endpoint'] = 1
+
+    # assign weights to the graph
+    digraph = compute_importance_weights(digraph)
 
     return digraph

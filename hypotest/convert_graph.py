@@ -78,7 +78,11 @@ def compute_colors(H):
             d['color'] = clr_unevidenced
 
         # opaque if endpoints, semi-transparent otherwise
-        if d['causal_endpoint'] == 1:
+        if 'causal_endpoint' in d and  d['causal_endpoint'] == 1:
+            d['color'] = ''.join((d['color'], ', 1)'))
+        elif 'hypo_source' in d and  d['hypo_source'] == 1:
+            d['color'] = ''.join((d['color'], ', 1)'))
+        elif 'hypo_target' in d and  d['hypo_target'] == 1:
             d['color'] = ''.join((d['color'], ', 1)'))
         else:
             d['color'] = ''.join((d['color'], ', 0.5)'))
