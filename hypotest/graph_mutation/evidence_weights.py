@@ -11,9 +11,9 @@ import networkx as nx
 
 
 # By default we use '-1' for unevidenced nodes and '1' for evidenced nodes
-def default_evidence_importance_measure(hypothgraph):
+def default_evidence_measure(hypothgraph):
     """
-    (hypograph) > dict(node=importance)
+    (hypograph) -> dict(node=importance)
 
     """
     evidence_weights = {}
@@ -21,14 +21,16 @@ def default_evidence_importance_measure(hypothgraph):
         if not 'evidence_weight' in node_data:
             evidence_weights[node] = -1
 
+    return evidence_weights
+
 
 # Assign the evidence measures
-def assign_evidence_weights(hypothgraph, measure=default_evidence_importance_measure):
+def assign_evidence_weights(hypothgraph, measure=default_evidence_measure):
     """
     (hypothgraph, [fun: measure]) -> hypothgraph
 
     """
-    computed_weights = default_evidence_importance_measure(hypothgraph)
+    computed_weights = default_evidence_measure(hypothgraph)
 
     nx.set_node_attributes(hypothgraph, 'evidence_weight', computed_weights)
 
@@ -43,7 +45,8 @@ def nodes_to_evidence(hypothgraph):
     Find all non-evidenced nodes
 
     """
-    return (n for (n, d) in hypothgraph.nodes_iter(data=True) if d["evidenced"] != 1)
+    return (n for (n, d) in hypothgraph.nodes_iter(data=True)
+              if d["evidence_weight"] != 1)
 
 
 def evidenced_nodes(hypothgraph):
@@ -53,4 +56,5 @@ def evidenced_nodes(hypothgraph):
     Find all evidenced nodes
 
     """
-    return (n for (n, d) in hypothgraph.nodes_iter(data=True) if d['evidenced'] == 1)
+    return (n for (n, d) in hypothgraph.nodes_iter(data=True)
+              if d['evidence_weight'] == 1)

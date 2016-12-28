@@ -1,10 +1,20 @@
-# coding: utf8
-"""
-Evaluate confidence in the given causal chain
-
-:author: Asan Agibetov
-
-"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# # Confidence propagation
+#
+# Confidence depends on the hypothesis configuration, which consists of
+# evidenced nodes, hypothesis source and target (boundary nodes). In case there
+# is a cycle, the topological order is not possible and thus the source and
+# target can be interchanged.
+#
+# The max confidence between two random variables `X`, `Y` is the one you obtain
+# when all the nodes are evidenced, which are on the shortest paths from `X` to
+# `Y`. Thus, you need a helper function to compute weighted path from any node
+# `u` to any node `v`.
+#
+# :author: Asan Agibetov
+#
 from operator import itemgetter
 import networkx as nx
 
@@ -15,15 +25,6 @@ from hypotest.assert_evidence import assert_evidence, unassert_evidence
 MIN_CONFIDENCE = -100
 
 
-def default_fn_importance(H, node):
-    """
-    Compute importance factor for given node
-
-    """
-    return H.node[node]["evidenced"] * \
-        H.node[node]["computed importance factor"]
-
-
 def path_confidence(H, path, fn_importance=default_fn_importance):
     """
     (hypothgraph, path) -> float
@@ -31,7 +32,7 @@ def path_confidence(H, path, fn_importance=default_fn_importance):
     H
         hypothesis graph
     path
-        list of nodes
+        list of nodes on the path
 
     fn_importance (optional)
         function which chooses how to compute confidence for one node
