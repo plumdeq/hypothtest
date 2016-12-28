@@ -5,8 +5,6 @@
 #
 # :author: Asan Agibetov
 #
-from hypotest.utils import utils
-
 import networkx as nx
 
 
@@ -21,8 +19,7 @@ def default_global_importance_measure(hypothgraph):
     return nx.betweenness_centrality(hypothgraph, endpoints=True)
 
 
-@utils.memo
-def compute_importance_weights(hypothgraph, measure=default_global_importance_measure):
+def assign_importance_weights(hypothgraph, measure=default_global_importance_measure):
     """
     (hypothgraph, [fun: measure]) -> hypothgraph
 
