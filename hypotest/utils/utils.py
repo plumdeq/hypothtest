@@ -1,10 +1,8 @@
 # coding utf-8
-"""
-Utils module, i.e., transformations of strings, urls etc.
-
-:author: Asan Agibetov
-
-"""
+# # Utils module, i.e., transformations of strings, urls etc.
+#
+# :author: Asan Agibetov
+#
 import networkx as nx
 from functools import wraps
 
