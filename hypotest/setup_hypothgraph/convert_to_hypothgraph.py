@@ -11,8 +11,7 @@
 # - `importance_weight`
 # - `boundary nodes` (`hypothesis_source` and `hypothesis_target`)
 #
-from hypotest.graph_mutation import (
-        importance_weights, evidence_weights, boundary)
+from hypotest.graph_mutation import importance_weights, evidence_weights
 
 
 # Convert networkx graph into a hypograph with causality meta-data updated
@@ -22,9 +21,5 @@ def convert_to_hypothgraph(digraph):
 
     # assign evidence weights to the graph
     digraph = evidence_weights.assign_evidence_weights(digraph)
-
-    # assign random boudary nodes
-    random_source, random_target = boundary.random_boundary_nodes(digraph)
-    digraph = boundary.assign_boundary(digraph, random_source, random_target)
 
     return digraph

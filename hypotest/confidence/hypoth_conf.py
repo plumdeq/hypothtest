@@ -3,22 +3,19 @@
 #
 # author: Asan Agibetov
 #
-# # Define boundary of the hypothesis graph
-#
-# A boundary of the hypothesis is simply two endpoints such that there is a
-# path from the source to the target.
-
-# ## Note
-#
-# If you have cycles and the graph is connected than you will have a path
-# between any two nodes. Moreover, the topological sort does not mean anything
-# anymore, since it is not defined on directed graphs with cycles
 import random
 import networkx as nx
+from collections import namedtuple
+
+# ## Hypothesis configuration
+#
+# Hypothesis configuration is a tuple (source, target, evidenced_nodes) that
+# dictates how the confidence is measured
+Hypoth_Conf = namedtuple('Hypoth_Conf', ['source', 'target', 'evidenced_nodes'])
 
 
 # Boundary nodes drawn at random
-def random_boundary_nodes(digraph):
+def random_hypoth_conf_endpoints(digraph):
     """
     (digraph) -> (source, target)
 
@@ -36,7 +33,7 @@ def random_boundary_nodes(digraph):
     # recompute if source and target are the same, or if there is no path
     # between them
     if source == target or not nx.has_path(digraph, source, target):
-        return random_boundary_nodes(digraph)
+        return random_hypoth_conf_endpoints(digraph)
 
     else:
         return (source, target)
@@ -103,7 +100,7 @@ def get_boundary_nodes(hypothgraph):
 
 # Given two nodes, we sort them topologically, we also check whether there is a
 # path between the two nodes
-def sort_boundary(hypothgraph, u, v):
+def sort_hypoth_conf_endpoints(hypothgraph, u, v):
     """
     (hypothgraph, endpoint1, endpoint2) -> sorted(endpoint1, endpoint2)
 

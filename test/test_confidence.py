@@ -20,15 +20,13 @@ sys.path.insert(0, mypath)
 # Max confidence is the sum of weighted paths where all nodes are evidenced.
 # Essentially, we perform a series of tests on path graphs, and complete graphs
 #
-from hypotest.setup_hypothgraph import sample_graphs
-from hypotest.graph_mutation import boundary
-from hypotest.confidence import compute_confidence
+from hypotest.confidence import compute_confidence, hypoth_conf, boundary
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
 
 # ## Fixtures
 import pytest
 
-Hypoth_Conf = compute_confidence.Hypoth_Conf
+Hypoth_Conf = hypoth_conf.Hypoth_Conf
 
 @pytest.fixture
 def get_complete_graph():
@@ -172,28 +170,24 @@ def test_evidenced_outside_on_path_graph(get_path_graph_and_configurations):
     test_data      = get_path_graph_and_configurations
     hypothgraph    = test_data['hypothgraph']
     partial_within = test_data['partial_within']
+    source         = partial_within.source
+    target         = partial_within.target
 
     before_confidence       =  compute_confidence.confidence(hypothgraph, partial_within)
-    before_max_confidence   =  compute_confidence.max_confidence(hypothgraph, partial_within.source, partial_within.target)
+    before_max_confidence   =  compute_confidence.max_confidence(hypothgraph, source, target)
     before_norm_confidence  =  compute_confidence.normalized_confidence(hypothgraph, partial_within)
 
-    # evidence nodes outside the boundary
-    simple_paths = nx.all_simple_paths(hypothgraph, partial_within.source, partial_within.target)
-    all_nodes = (node for path in simple_paths for node in path)
-    nodes_within_boundary = set(all_nodes)
-    outside_boundary_nodes = (node
-                              for node in hypothgraph.nodes_iter()
-                              if not node in nodes_within_boundary)
-
-    outside_evidence_nodes = partial_within.evidenced_nodes + list(outside_boundary_nodes)
+    # Evidence nodes which will not contribute to the causation confidence
+    on_boundary_nodes = boundary.on_boundary(hypothgraph, source, target)
+    outside_evidence_nodes = partial_within.evidenced_nodes + list(on_boundary_nodes)
 
     # create new hypothesis configuration
-    new_conf = Hypoth_Conf(source=partial_within.source,
-                           target=partial_within.target,
+    new_conf = Hypoth_Conf(source=source,
+                           target=target,
                            evidenced_nodes=outside_evidence_nodes)
 
     after_confidence       =  compute_confidence.confidence(hypothgraph, new_conf)
-    after_max_confidence   =  compute_confidence.max_confidence(hypothgraph, new_conf.source, new_conf.target)
+    after_max_confidence   =  compute_confidence.max_confidence(hypothgraph, source, target)
     after_norm_confidence  =  compute_confidence.normalized_confidence(hypothgraph, new_conf)
 
     assert before_confidence == after_confidence

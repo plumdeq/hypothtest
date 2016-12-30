@@ -17,24 +17,14 @@
 #
 import functools
 from operator import itemgetter
-from collections import namedtuple
 import networkx as nx
 
-# from hypotest.utils import (find_missing_nodes, sort_endpoints,
-#                             find_causal_endpoints)
-# from hypotest.assert_evidence import assert_evidence, unassert_evidence
-from hypotest.graph_mutation import boundary
+from hypotest.confidence.hypoth_conf import sort_hypoth_conf_endpoints
 
 # ## Constants
 #
 # Some constants for confidence
 MIN_CONFIDENCE = 0
-
-# ## Hypothesis configuration
-#
-# Hypothesis configuration is a tuple (source, target, evidenced_nodes) that
-# dictates how the confidence is measured
-Hypoth_Conf = namedtuple('Hypoth_Conf', ['source', 'target', 'evidenced_nodes'])
 
 # ## Node importance measures
 #
@@ -113,7 +103,7 @@ def confidence(hypothgraph, hypoth_conf,
     # re-order topologically, note that sort_boundary
     # throws exception if there are no paths from source to target
     try:
-        source, target = boundary.sort_boundary(hypothgraph, source, target)
+        source, target = sort_hypoth_conf_endpoints(hypothgraph, source, target)
     except nx.NetworkXNoPath:
         print("No path between {} and {}".format(source, target))
         return MIN_CONFIDENCE
@@ -144,7 +134,7 @@ def max_confidence(hypothgraph, source, target,
     # re-order topologically, note that sort_boundary
     # throws exception if there are no paths from source to target
     try:
-        source, target = boundary.sort_boundary(hypothgraph, source, target)
+        source, target = sort_hypoth_conf_endpoints(hypothgraph, source, target)
     except nx.NetworkXNoPath:
         print("No path between {} and {}".format(source, target))
         return MIN_CONFIDENCE
@@ -173,7 +163,7 @@ def normalized_confidence(hypothgraph, hypoth_conf,
     # re-order topologically, note that sort_boundary
     # throws exception if there are no paths from source to target
     try:
-        source, target = boundary.sort_boundary(hypothgraph, source, target)
+        source, target = sort_hypoth_conf_endpoints(hypothgraph, source, target)
     except nx.NetworkXNoPath:
         print("No path between {} and {}".format(source, target))
         return MIN_CONFIDENCE

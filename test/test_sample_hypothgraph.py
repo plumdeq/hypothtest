@@ -39,13 +39,3 @@ def test_annotations_hypothgraph(get_hypothgraph):
     for node, node_data in hypothgraph.nodes_iter(data=True):
         assert 'evidence_weight' in node_data
         assert 'importance_weight' in node_data
-
-    # any hypotehsis_source?
-    any_source = ('hypothesis_source' in node_data
-                  for node, node_data in hypothgraph.nodes_iter(data=True))
-    assert any(any_source)
-
-    # any hypothesis_target?
-    any_target = ('hypothesis_target' in node_data
-                  for node, node_data in hypothgraph.nodes_iter(data=True))
-    assert any(any_target)
