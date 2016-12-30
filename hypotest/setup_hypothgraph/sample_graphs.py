@@ -7,9 +7,8 @@
 #
 # Sample hypothesis graph is `digraph` (networkx) which we obtain from the
 # `grontocrawler` and convert it to a hypograph with updated meta-data
-
-from hypotest.graph_mutation import (
-        importance_weights, evidence_weights, boundary)
+#
+from hypotest.setup_hypothgraph import convert_to_hypothgraph
 
 from grontocrawler.sample_ontology.hypo_ontology import g
 from grontocrawler.graph import produce_graph
@@ -27,14 +26,6 @@ def sample_hypothgraph(digraph=None):
     else:
         digraph = sample_digraph()
 
-    # assign global important weights (topology) to the graph
-    digraph = importance_weights.assign_importance_weights(digraph)
+    hypothgraph = convert_to_hypothgraph.convert_to_hypothgraph(digraph)
 
-    # assign evidence weights to the graph
-    digraph = evidence_weights.assign_evidence_weights(digraph)
-
-    # assign random boudary nodes
-    random_source, random_target = boundary.random_boundary_nodes(digraph)
-    digraph = boundary.assign_boundary(digraph, random_source, random_target)
-
-    return digraph
+    return hypothgraph

@@ -19,9 +19,9 @@ import functools
 from operator import itemgetter
 import networkx as nx
 
-from hypotest.utils import (find_missing_nodes, sort_endpoints,
-                            find_causal_endpoints)
-from hypotest.assert_evidence import assert_evidence, unassert_evidence
+# from hypotest.utils import (find_missing_nodes, sort_endpoints,
+#                             find_causal_endpoints)
+# from hypotest.assert_evidence import assert_evidence, unassert_evidence
 
 MIN_CONFIDENCE = -100
 
@@ -38,6 +38,7 @@ def default_node_importance_measure(hypothgraph, node):
 
     return evidence_weight * importance_weight
 
+
 # max confidence measure has all the nodes evidenced, i.e., evidence_weight at
 # max
 def max_node_importance_measure(hypothgraph, node):
@@ -53,7 +54,7 @@ def max_node_importance_measure(hypothgraph, node):
 
 # Given a path compute a weighted path of all the nodes
 def weighted_path(hypothgraph, nodes_in_path,
-                  func_importance=default_global_importance_measure):
+                  func_importance=default_node_importance_measure):
     """
     (hypothgraph, path, fun: node_measure) -> float
 
@@ -66,14 +67,14 @@ def weighted_path(hypothgraph, nodes_in_path,
         function which chooses how to compute confidence for one node
 
     """
-    return sum(func_importance(hypothgraph, node) for node in nodes_in_path]
+    return sum(func_importance(hypothgraph, node) for node in nodes_in_path)
 
 
 # For a given hypothesis configuration compute the confidence which you can get
 # as a proportion of the mean weighted path to the mean weighted path whenever
 # all the nodes in the path are evidenced
 def normalized_confidence(hypothgraph, source, target,
-        func_importance=default_global_importance_measure,
+        func_importance=default_node_importance_measure,
                        log=False):
     """
     (graph, source, target, func) -> (int)
@@ -94,7 +95,7 @@ def normalized_confidence(hypothgraph, source, target,
 
     # return 0 for undefined confidence if no path
     if not nx.has_path(H, source, target):
-        raise Exception("No path between {} and {}".format(source, target)
+        raise Exception("No path between {} and {}".format(source, target))
 
     # compute all paths between source and target
     try:
@@ -120,7 +121,7 @@ def max_confidence(hypothgraph, source, target):
 
     # if there is no path raise Exception
     if not nx.has_path(H, source, target):
-        raise Exception("No path between {} and {}".format(source, target)
+        raise Exception("No path between {} and {}".format(source, target))
 
     # you evaluate weighted paths on all paths from source to target
     all_simple_paths = nx.all_simple_paths(hypothgraph, source, target)

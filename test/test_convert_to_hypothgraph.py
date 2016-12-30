@@ -15,25 +15,33 @@ mypath = os.path.join(dirname, '..')
 mypath = os.path.abspath(mypath)
 sys.path.insert(0, mypath)
 
-# ## Test sample hypothgraph
+# ## Test convert to hypothgraph
 #
-# Sample hypothgraph, checking whether it works
-from hypotest.setup_hypothgraph import sample_graphs
+# Make hypoth graph creates a hypothesis graph from any directed graph, here we
+# make sure that this graph contains the necessary structure.
+from hypotest.setup_hypothgraph import convert_to_hypothgraph
 
 # ## Fixtures
 import pytest
 
 
-# uses grontocrawler to produce a digraph
+# Create a very simple digraph, which we will later convert into a hypothgraph
 @pytest.fixture
-def get_hypothgraph():
-    return sample_graphs.sample_hypothgraph()
+def get_complete_graph():
+    complete_graph = nx.complete_graph(10)
+    directed_graph = complete_graph.to_directed()
+
+    return directed_graph
 
 
-# hypothgraph should have 'evidence measure', 'importance measure' assigned to
-# every node. It should also have 'hypothesis source' and 'hypothesis target'
-def test_annotations_hypothgraph(get_hypothgraph):
-    hypothgraph = get_hypothgraph
+def test_convert_to_hypothgraph(get_complete_graph):
+    digraph = get_complete_graph
+    # assert there are no computed meta data like `evidence_weight` etc.
+    for node, node_data in digraph.nodes_iter(data=True):
+        assert not 'evidence_weight' in node_data
+        assert not 'importance_weight' in node_data
+
+    hypothgraph = convert_to_hypothgraph.convert_to_hypothgraph(digraph)
 
     # every node should have computed btwin_centrality
     for node, node_data in hypothgraph.nodes_iter(data=True):
