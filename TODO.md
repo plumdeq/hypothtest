@@ -8,6 +8,6 @@ We collect all the items (e.g., features, bug fixes) that need to be done here
 * [x] more graph mutation refactoring (assignment of boundary nodes, of evidences etc.)
 * [x] test and refactor confidence propagation code for path graphs (simplest cases)
 * [x] add boundary functions, as, nodes within boundary (all accessible via simple paths) and outside
-* [ ] test confidence with more complex graphs
+* [x] test confidence with more complex graphs
 * [ ] ratio confidence sub hypothesis to full hypothesis
 * [ ] closest confidence to the max confidence given some constraints

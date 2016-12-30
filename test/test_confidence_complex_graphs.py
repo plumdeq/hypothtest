@@ -15,10 +15,10 @@ mypath = os.path.join(dirname, '..')
 mypath = os.path.abspath(mypath)
 sys.path.insert(0, mypath)
 
-# # Testing confidence computation
+# # Testing confidence computation for complex graphs
 
-# Max confidence is the sum of weighted paths where all nodes are evidenced.
-# Essentially, we perform a series of tests on path graphs, and complete graphs
+# Complex graphs have many simple paths and cycles, we test confidences and
+# boundaries on this type of graphs
 #
 from hypotest.confidence import compute_confidence, hypoth_conf, boundary
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
@@ -27,14 +27,6 @@ from hypotest.setup_hypothgraph import convert_to_hypothgraph
 import pytest
 
 Hypoth_Conf = hypoth_conf.Hypoth_Conf
-
-@pytest.fixture
-def get_complete_graph():
-    complete_graph = nx.complete_graph(10, nx.DiGraph())
-    hypothgraph = convert_to_hypothgraph.convert_to_hypothgraph(complete_graph)
-
-    return hypothgraph
-
 
 # ## Hypothesis configuration
 #
@@ -54,54 +46,32 @@ def get_complete_graph():
 # Our test graph function, gives us a simple path graph and a set of
 # hypothesis configurations
 @pytest.fixture
-def get_path_graph_and_configurations():
-    path_graph = nx.path_graph(10, nx.DiGraph())
-    hypothgraph = convert_to_hypothgraph.convert_to_hypothgraph(path_graph)
+def get_complex_graph_and_configurations():
+    digraph = nx.path_graph(11, create_using=nx.DiGraph())
+    digraph.add_cycle([2, 3, 4])
+    digraph.add_cycle([6, 7, 8])
+    hypothgraph = convert_to_hypothgraph.convert_to_hypothgraph(digraph)
 
-    # hypothesis configurations (source, target, evidenced_nodes), we fix
-    # source and target to some nodes
-    source = 0
-    target = 4
+    source, target = 2, 8
 
-    # nothing evidenced, partially within boundary, full within boundary,
-    # nothing inside, some outside
-    nothing         =  Hypoth_Conf(source=source, target=target, evidenced_nodes=[])
-    partial_within  =  Hypoth_Conf(source=source, target=target, evidenced_nodes=[0, 2])
-    full_within     =  Hypoth_Conf(source=source, target=target, evidenced_nodes=[0, 1, 2, 3, 4])
+    nothing  =  Hypoth_Conf(source=source, target=target, evidenced_nodes=[])
+    partial  =  Hypoth_Conf(source=source, target=target, evidenced_nodes=[3, 6, 7])
+    full     =  Hypoth_Conf(source=source, target=target, evidenced_nodes=range(2,9))
 
     return {
         'hypothgraph': hypothgraph,
         'nothing': nothing,
-        'partial_within': partial_within,
-        'full_within': full_within,
+        'partial_within': partial,
+        'full_within': full
     }
-
-# ### Unit test weighted path computation
-def test_weighted_path_on_path_graph(get_path_graph_and_configurations):
-    test_data = get_path_graph_and_configurations
-    hypothgraph = test_data['hypothgraph']
-
-    # when nothing is evidenced on the path weighted path should be 0
-    null_confidence = compute_confidence.weighted_path(hypothgraph, [0, 1, 2, 3], [])
-    assert null_confidence == 0
-
-    # when something is evidenced the confidence should be more than zero
-    some_confidence = compute_confidence.weighted_path(hypothgraph, [0, 1, 2, 3], [0, 1])
-    assert some_confidence > null_confidence
-
-    # when every node in path is evidenced we get max confidence, which should
-    # be bigger than some_confidence
-    max_confidence = compute_confidence.weighted_path(hypothgraph, [0, 1, 2, 3], [0, 1, 2, 3])
-    assert max_confidence > some_confidence
-
 
 
 # ### Nothing evidenced on path graph
 #
 # Confidence with no nodes evidenced should be strictly smaller than the max
 # possible confidence
-def test_nothing_evidenced_on_path_graph(get_path_graph_and_configurations):
-    test_data   = get_path_graph_and_configurations
+def test_nothing_evidenced_on_path_graph(get_complex_graph_and_configurations):
+    test_data   = get_complex_graph_and_configurations
     hypothgraph = test_data['hypothgraph']
     nothing     = test_data['nothing']
 
@@ -121,8 +91,8 @@ def test_nothing_evidenced_on_path_graph(get_path_graph_and_configurations):
 # Confidence with partial nodes evidenced should be bigger than zero, max
 # confidence should be bigger than confidence. Normalized confidence should be
 # in [0..1] range
-def test_partial_evidenced_within_on_path_graph(get_path_graph_and_configurations):
-    test_data      = get_path_graph_and_configurations
+def test_partial_evidenced_within_on_path_graph(get_complex_graph_and_configurations):
+    test_data      = get_complex_graph_and_configurations
     hypothgraph    = test_data['hypothgraph']
     partial_within = test_data['partial_within']
 
@@ -144,8 +114,8 @@ def test_partial_evidenced_within_on_path_graph(get_path_graph_and_configuration
 # Confidence with all nodes evidenced should be bigger than zero, max
 # confidence should be equal to confidence. Normalized confidence should be
 # 1
-def test_full_evidenced_within_on_path_graph(get_path_graph_and_configurations):
-    test_data   = get_path_graph_and_configurations
+def test_full_evidenced_within_on_path_graph(get_complex_graph_and_configurations):
+    test_data   = get_complex_graph_and_configurations
     hypothgraph = test_data['hypothgraph']
     full_within = test_data['full_within']
 
@@ -166,8 +136,8 @@ def test_full_evidenced_within_on_path_graph(get_path_graph_and_configurations):
 
 # Evidencing nodes outside boundary does not influence confidences
 #
-def test_evidenced_outside_on_path_graph(get_path_graph_and_configurations):
-    test_data      = get_path_graph_and_configurations
+def test_evidenced_outside_on_path_graph(get_complex_graph_and_configurations):
+    test_data      = get_complex_graph_and_configurations
     hypothgraph    = test_data['hypothgraph']
     partial_within = test_data['partial_within']
     source         = partial_within.source

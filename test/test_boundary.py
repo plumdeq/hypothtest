@@ -65,3 +65,15 @@ def test_nodes_on_boundary(get_digraph_with_cycle):
 
     for node_on_boundary in nodes_on_boundary:
         assert not node_on_boundary in nodes_in_boundary_interior
+
+
+def test_partial_in_boundary(get_digraph_with_cycle):
+    hypothgraph, source, target = get_digraph_with_cycle
+
+    nodes_in_boundary_interior = list(boundary.in_boundary_interior(hypothgraph, source, target))
+    nodes_partial_in_boundary = list(boundary.partial_nodes_boundary_interior(hypothgraph, source, target))
+
+    assert len(nodes_partial_in_boundary) < len(nodes_in_boundary_interior)
+
+    for partial_node in nodes_partial_in_boundary:
+        assert partial_node in nodes_in_boundary_interior

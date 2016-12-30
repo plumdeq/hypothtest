@@ -123,3 +123,22 @@ def sort_hypoth_conf_endpoints(hypothgraph, u, v):
         raise Exception("No path between {} and {}".format(source, target))
 
     return (source, target)
+
+
+# ## Generation of correct source and target nodes
+
+# to simulate partial nodes, we simply take the minimum length path of all
+# the simple paths between `source` and `target`. While full will be
+# simulated with the maximul length path. We should make sure that there
+# are at least two paths of different path length between source and target
+def generate_reach_endpoints(hypothgraph):
+    simple_paths = []
+
+    while len(simple_paths) < 2:
+
+        source, target = random_hypoth_conf_endpoints(hypothgraph)
+
+        simple_paths = list(nx.all_simple_paths(hypothgraph, source, target))
+
+
+    return source, target
