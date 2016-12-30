@@ -9,7 +9,7 @@
 # target can be interchanged.
 #
 # The max confidence between two random variables `X`, `Y` is the one you obtain
-# when all the nodes are evidenced, which are on the shortest paths from `X` to
+# when all the nodes are evidenced, which are on all the simple paths from `X` to
 # `Y`. Thus, you need a helper function to compute weighted path from any node
 # `u` to any node `v`.
 #
@@ -17,17 +17,29 @@
 #
 import functools
 from operator import itemgetter
+from collections import namedtuple
 import networkx as nx
 
 # from hypotest.utils import (find_missing_nodes, sort_endpoints,
 #                             find_causal_endpoints)
 # from hypotest.assert_evidence import assert_evidence, unassert_evidence
+from hypotest.graph_mutation import boundary
 
-MIN_CONFIDENCE = -100
+# ## Constants
+#
+# Some constants for confidence
+MIN_CONFIDENCE = 0
+
+# ## Hypothesis configuration
+#
+# Hypothesis configuration is a tuple (source, target, evidenced_nodes) that
+# dictates how the confidence is measured
+Hypoth_Conf = namedtuple('Hypoth_Conf', ['source', 'target', 'evidenced_nodes'])
 
 # ## Node importance measures
 #
-# The default global importance measure is `evidence_weight` x `importance_weight`
+# The default global importance measure is `evidence_weight` x
+# `importance_weight`
 def default_node_importance_measure(hypothgraph, node):
     """
     (hypothgraph, node) -> contribution measure
@@ -39,45 +51,50 @@ def default_node_importance_measure(hypothgraph, node):
     return evidence_weight * importance_weight
 
 
-# max confidence measure has all the nodes evidenced, i.e., evidence_weight at
-# max
-def max_node_importance_measure(hypothgraph, node):
-    """
-    (hypothgraph, node) -> max possible contribution measure
-
-    """
-    evidence_weight = 1
-    importance_weight = hypothgraph.node[node]["importance_weight"]
-
-    return evidence_weight * importance_weight
-
-
-# Given a path compute a weighted path of all the nodes
-def weighted_path(hypothgraph, nodes_in_path,
+# Given a path compute a weighted path of all the nodes, where each nodes
+# importance is contributed if he is evidenced or not
+def weighted_path(hypothgraph, nodes_in_path, evidenced_nodes=[],
                   func_importance=default_node_importance_measure):
     """
     (hypothgraph, path, fun: node_measure) -> float
 
     H
         hypothesis graph
-    path
+
+    nodes_in_path
         list of nodes on the path
 
+    evidenced_nodes
+        list of evidenced nodes
+
     fn_importance (optional)
-        function which chooses how to compute confidence for one node
+        function which chooses how to compute confidence contribution for one node
 
     """
-    return sum(func_importance(hypothgraph, node) for node in nodes_in_path)
+    return sum(
+        func_importance(hypothgraph, node)
+        for node in nodes_in_path
+        if node in evidenced_nodes
+    )
+
+
+# Wrapper function to compute tha max confidence, by currying
+# evidenced nodes as all nodes in the path
+def max_weighted_path(hypothgraph, nodes_in_path, **kwargs):
+    evidenced_nodes=nodes_in_path
+    f = functools.partial(weighted_path, hypothgraph, nodes_in_path,
+                          evidenced_nodes=evidenced_nodes)
+
+    return f(**kwargs)
 
 
 # For a given hypothesis configuration compute the confidence which you can get
 # as a proportion of the mean weighted path to the mean weighted path whenever
 # all the nodes in the path are evidenced
-def normalized_confidence(hypothgraph, source, target,
-        func_importance=default_node_importance_measure,
-                       log=False):
+def confidence(hypothgraph, hypoth_conf,
+               func_importance=default_node_importance_measure, log=False):
     """
-    (graph, source, target, func) -> (int)
+    (graph, hypoth_conf, func) -> (int)
 
     Propagate confidence factor for given source and target nodes
     Please note, that we make sure that the source and target are sorted
@@ -86,52 +103,82 @@ def normalized_confidence(hypothgraph, source, target,
     H
         hypothesis graph
 
-    source, target
-        nodes
+    hypoth_conf
+        tuple(source, target, evidenced_nodes)
 
     """
-    # re-order topologically
-    source, target = sort_endpoints(H, source, target)
+    source, target = hypoth_conf.source, hypoth_conf.target
+    evidenced_nodes = hypoth_conf.evidenced_nodes
 
-    # return 0 for undefined confidence if no path
-    if not nx.has_path(H, source, target):
-        raise Exception("No path between {} and {}".format(source, target))
-
-    # compute all paths between source and target
+    # re-order topologically, note that sort_boundary
+    # throws exception if there are no paths from source to target
     try:
-        paths = nx.all_shortest_paths(H, source, target)
+        source, target = boundary.sort_boundary(hypothgraph, source, target)
     except nx.NetworkXNoPath:
         print("No path between {} and {}".format(source, target))
         return MIN_CONFIDENCE
 
-    confidence_measures = [path_confidence(H, path, fn_importance=fn_importance)
-                           for path in paths]
+    # compute all paths between source and target
+    simple_paths = nx.all_simple_paths(hypothgraph, source, target)
+
+    # Compute weighted paths for all simple paths with a given node importance
+    # function
+    weighted_path_values = [
+        weighted_path(hypothgraph, simple_path,
+                      evidenced_nodes, func_importance=func_importance)
+        for simple_path in simple_paths
+    ]
+
+    nb_paths = len(weighted_path_values)
 
     if log:
         print("confidence measures are {}".format(confidence_measures))
 
-    return sum(confidence_measures)/float(len(confidence_measures))
+    return sum(weighted_path_values)/float(nb_paths)
 
 
 # Max confidence we can get wrt. hypothesis configuration. We evidence all the
 # nodes in the path and compute its maximum possible confidence.
-def max_confidence(hypothgraph, source, target):
-    # re-order topologically
-    source, target = sort_endpoints(H, source, target)
+def max_confidence(hypothgraph, source, target,
+                   func_importance=default_node_importance_measure):
+    # re-order topologically, note that sort_boundary
+    # throws exception if there are no paths from source to target
+    try:
+        source, target = boundary.sort_boundary(hypothgraph, source, target)
+    except nx.NetworkXNoPath:
+        print("No path between {} and {}".format(source, target))
+        return MIN_CONFIDENCE
 
-    # if there is no path raise Exception
-    if not nx.has_path(H, source, target):
-        raise Exception("No path between {} and {}".format(source, target))
+    # compute all paths between source and target
+    simple_paths = nx.all_simple_paths(hypothgraph, source, target)
 
-    # you evaluate weighted paths on all paths from source to target
-    all_simple_paths = nx.all_simple_paths(hypothgraph, source, target)
-    nb_paths = len(all_simple_paths)
+    # Compute weighted paths for all simple paths with a given node importance
+    # function
+    max_weighted_path_values = [
+        max_weighted_path(hypothgraph, simple_path, func_importance=func_importance)
+        for simple_path in simple_paths
+    ]
 
-    # we define a partial function to compute weighted paths, where the node
-    # importance is fixed with all nodes evidenced
-    max_weighted_path = functools.partial(weighted_path,
-        func_importance=default_node_importance_measure)
+    nb_paths = len(max_weighted_path_values)
 
-    confidence_measures = [max_weighted_path(hypothgraph, path) for path in all_simple_paths]
+    return sum(max_weighted_path_values)/float(nb_paths)
 
-    return sum(confidence_measures)/nb_paths
+
+# Normalized confidence is our confidence normalized by the max possible
+# confidence
+def normalized_confidence(hypothgraph, hypoth_conf,
+                          func_importance=default_node_importance_measure):
+    source, target = hypoth_conf.source, hypoth_conf.target
+    evidenced_nodes = hypoth_conf.evidenced_nodes
+    # re-order topologically, note that sort_boundary
+    # throws exception if there are no paths from source to target
+    try:
+        source, target = boundary.sort_boundary(hypothgraph, source, target)
+    except nx.NetworkXNoPath:
+        print("No path between {} and {}".format(source, target))
+        return MIN_CONFIDENCE
+
+    confidence_measure = confidence(hypothgraph, hypoth_conf, func_importance=func_importance)
+    max_confidence_measure = max_confidence(hypothgraph, source, target, func_importance=func_importance)
+
+    return float(confidence_measure)/max_confidence_measure

@@ -28,10 +28,9 @@ import pytest
 # Create a very simple digraph, which we will later convert into a hypothgraph
 @pytest.fixture
 def get_complete_graph():
-    complete_graph = nx.complete_graph(10)
-    directed_graph = complete_graph.to_directed()
+    complete_graph = nx.complete_graph(10, nx.DiGraph())
 
-    return directed_graph
+    return complete_graph
 
 
 def test_convert_to_hypothgraph(get_complete_graph):
