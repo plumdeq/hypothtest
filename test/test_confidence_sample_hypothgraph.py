@@ -47,7 +47,7 @@ Hypoth_Conf = hypoth_conf.Hypoth_Conf
 def get_sample_hypothgraph_and_configurations():
     hypothgraph     =  sample_graphs.sample_hypothgraph()
 
-    source, target  =  hypoth_conf.generate_reach_endpoints(hypothgraph)
+    source, target  =  hypoth_conf.generate_rich_endpoints(hypothgraph)
 
     partial_nodes   =  list(boundary.partial_nodes_boundary_interior(hypothgraph, source, target))
     full_nodes      =  list(boundary.in_boundary_interior(hypothgraph, source, target))

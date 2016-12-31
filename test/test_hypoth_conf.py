@@ -39,11 +39,11 @@ def get_digraph_with_cycle():
     return hypothgraph
 
 
-def test_generate_reach_endpoints(get_digraph_with_cycle):
+def test_generate_rich_endpoints(get_digraph_with_cycle):
     hypothgraph = get_digraph_with_cycle
 
     # just run 100 tests
     for _ in xrange(100):
-        source, target = hypoth_conf.generate_reach_endpoints(hypothgraph)
+        source, target = hypoth_conf.generate_rich_endpoints(hypothgraph)
         all_simple_paths = list(nx.all_simple_paths(hypothgraph, source, target))
         assert len(all_simple_paths) >= 2

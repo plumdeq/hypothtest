@@ -35,10 +35,12 @@ def default_node_importance_measure(hypothgraph, node):
     (hypothgraph, node) -> contribution measure
 
     """
-    evidence_weight = hypothgraph.node[node]["evidence_weight"]
-    importance_weight = hypothgraph.node[node]["importance_weight"]
+    # evidence_weight = hypothgraph.node[node]["evidence_weight"]
+    # importance_weight = hypothgraph.node[node]["importance_weight"]
 
-    return evidence_weight * importance_weight
+    # return evidence_weight * importance_weight
+
+    return 1
 
 
 # Given a path compute a weighted path of all the nodes, where each nodes

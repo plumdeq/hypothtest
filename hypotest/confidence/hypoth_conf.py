@@ -131,7 +131,7 @@ def sort_hypoth_conf_endpoints(hypothgraph, u, v):
 # the simple paths between `source` and `target`. While full will be
 # simulated with the maximul length path. We should make sure that there
 # are at least two paths of different path length between source and target
-def generate_reach_endpoints(hypothgraph):
+def generate_rich_endpoints(hypothgraph):
     simple_paths = []
 
     while len(simple_paths) < 2:
