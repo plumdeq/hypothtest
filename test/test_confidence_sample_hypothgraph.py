@@ -20,7 +20,8 @@ sys.path.insert(0, mypath)
 
 # Sample hypothesis graph contains cycles
 #
-from hypotest.confidence import compute_confidence, hypoth_conf, boundary
+from hypotest.confidence import compute_confidence
+from hypotest.graph_generation import hypoth_conf, boundary
 from hypotest.setup_hypothgraph import sample_graphs
 
 # ## Fixtures

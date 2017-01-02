@@ -7,7 +7,8 @@
 import networkx as nx
 import pytest
 
-from hypotest.confidence import compute_confidence, hypoth_conf, boundary
+from hypotest.confidence import compute_confidence
+from hypotest.graph_generation import hypoth_conf, boundary
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
 
 Hypoth_Conf = hypoth_conf.Hypoth_Conf

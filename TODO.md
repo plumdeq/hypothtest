@@ -10,7 +10,9 @@ We collect all the items (e.g., features, bug fixes) that need to be done here
 * [x] add boundary functions, as, nodes within boundary (all accessible via simple paths) and outside
 * [x] test confidence with more complex graphs
 * [x] test relative confidence sub hypothesis to full hypothesis on a simple graph
-* [ ] generate a sub hypothesis graph for given source and target (update generation function with the percentage of nodes in the boundary interior)
+* [o] generate a sub hypothesis graph for given source and target (update generation function with the percentage of nodes in the boundary interior)
 * [ ] test relative confidence sub to full on a sample hypothesis graph
 * [ ] test and add notes on monotonicity of relative confidence (can we have the same for the normalized confidence?)
 * [ ] test closest confidence to the max confidence given some constraints
+* [ ] write subgraph to a dot language (based on grontocrawler)
+* [ ] partition the hypothesis graph based on the missing paths

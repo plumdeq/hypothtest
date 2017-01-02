@@ -24,7 +24,7 @@ sys.path.insert(0, mypath)
 # the hypothesis configuration source node. Nodes on the boundary are all nodes
 # which are not in the interior of the boundary
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
-from hypotest.confidence import boundary
+from hypotest.graph_generation import boundary
 
 # ## Fixtures
 import pytest

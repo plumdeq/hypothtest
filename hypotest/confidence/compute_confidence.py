@@ -19,7 +19,7 @@ import functools
 from operator import itemgetter
 import networkx as nx
 
-from hypotest.confidence.hypoth_conf import sort_hypoth_conf_endpoints
+from hypotest.graph_generation.hypoth_conf import sort_hypoth_conf_endpoints
 
 # ## Constants
 #

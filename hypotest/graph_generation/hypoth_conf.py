@@ -39,6 +39,56 @@ def random_hypoth_conf_endpoints(digraph):
         return (source, target)
 
 
+# Given two nodes, we sort them topologically, we also check whether there is a
+# path between the two nodes
+def sort_hypoth_conf_endpoints(hypothgraph, u, v):
+    """
+    (hypothgraph, endpoint1, endpoint2) -> sorted(endpoint1, endpoint2)
+
+    We run the topological sort on hypothgraph and make sure that u and v are correctly
+    sorted
+
+    """
+    # We may have cycles, in that case no topological sorting is possible
+    try:
+        topol_sorted = nx.topological_sort(hypothgraph)
+        u_index, v_index = topol_sorted.index(u), topol_sorted.index(v)
+        source, target = (u, v) if u_index < v_index else (v, u)
+
+    # TODO catch proper NetworkX exception (cf. definition of
+    # `nx.topological_sort`)
+    except Exception:
+        source, target = u, v
+
+    if not nx.has_path(hypothgraph, source, target):
+        raise Exception("No path between {} and {}".format(source, target))
+
+    return (source, target)
+
+
+# ## Generation of correct source and target nodes
+
+# to simulate partial nodes, we simply take the minimum length path of all
+# the simple paths between `source` and `target`. While full will be
+# simulated with the maximul length path. We should make sure that there
+# are at least two paths of different path length between source and target
+def generate_rich_endpoints(hypothgraph):
+    simple_paths = []
+
+    while len(simple_paths) < 2:
+
+        source, target = random_hypoth_conf_endpoints(hypothgraph)
+
+        simple_paths = list(nx.all_simple_paths(hypothgraph, source, target))
+
+
+    return source, target
+
+
+# -------------
+# ## DEPRECATED
+# -------------
+
 # Unassign any assigned boundary
 def unassign_boundary(hypothgraph):
     boundary_nodes = get_boundary_nodes(hypothgraph)
@@ -96,49 +146,3 @@ def get_boundary_nodes(hypothgraph):
         return None
 
     return (source, target)
-
-
-# Given two nodes, we sort them topologically, we also check whether there is a
-# path between the two nodes
-def sort_hypoth_conf_endpoints(hypothgraph, u, v):
-    """
-    (hypothgraph, endpoint1, endpoint2) -> sorted(endpoint1, endpoint2)
-
-    We run the topological sort on hypothgraph and make sure that u and v are correctly
-    sorted
-
-    """
-    # We may have cycles, in that case no topological sorting is possible
-    try:
-        topol_sorted = nx.topological_sort(hypothgraph)
-        u_index, v_index = topol_sorted.index(u), topol_sorted.index(v)
-        source, target = (u, v) if u_index < v_index else (v, u)
-
-    # TODO catch proper NetworkX exception (cf. definition of
-    # `nx.topological_sort`)
-    except Exception:
-        source, target = u, v
-
-    if not nx.has_path(hypothgraph, source, target):
-        raise Exception("No path between {} and {}".format(source, target))
-
-    return (source, target)
-
-
-# ## Generation of correct source and target nodes
-
-# to simulate partial nodes, we simply take the minimum length path of all
-# the simple paths between `source` and `target`. While full will be
-# simulated with the maximul length path. We should make sure that there
-# are at least two paths of different path length between source and target
-def generate_rich_endpoints(hypothgraph):
-    simple_paths = []
-
-    while len(simple_paths) < 2:
-
-        source, target = random_hypoth_conf_endpoints(hypothgraph)
-
-        simple_paths = list(nx.all_simple_paths(hypothgraph, source, target))
-
-
-    return source, target

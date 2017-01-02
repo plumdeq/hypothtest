@@ -20,7 +20,8 @@ sys.path.insert(0, mypath)
 # Max confidence is the sum of weighted paths where all nodes are evidenced.
 # Essentially, we perform a series of tests on path graphs, and complete graphs
 #
-from hypotest.confidence import compute_confidence, hypoth_conf, boundary
+from hypotest.confidence import compute_confidence
+from hypotest.graph_generation import hypoth_conf, boundary
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
 
 # ## Fixtures

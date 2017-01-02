@@ -19,7 +19,7 @@
 import networkx as nx
 import random
 
-from hypotest.confidence import hypoth_conf
+from hypotest.graph_generation import hypoth_conf
 
 
 # Generates all nodes accessible from source

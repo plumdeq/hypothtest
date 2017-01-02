@@ -20,7 +20,7 @@ sys.path.insert(0, mypath)
 # # Testing hypothesis configuration
 
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
-from hypotest.confidence import hypoth_conf
+from hypotest.graph_generation import hypoth_conf
 
 # ## Fixtures
 import pytest
