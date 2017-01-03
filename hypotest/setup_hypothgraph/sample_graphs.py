@@ -3,12 +3,12 @@
 #
 # author: Asan Agibetov
 #
-# # Sample Hypothesis graph
+# # Sample Digraph and Hypothesis graph
 #
 # Sample hypothesis graph is `digraph` (networkx) which we obtain from the
 # `grontocrawler` and convert it to a hypograph with updated meta-data
-
-from hypotest.setup_hypothgraph import utils
+#
+from hypotest.setup_hypothgraph import convert_to_hypothgraph
 
 from grontocrawler.sample_ontology.hypo_ontology import g
 from grontocrawler.graph import produce_graph
@@ -20,17 +20,12 @@ def sample_digraph():
 
 
 # Convert networkx graph into a hypograph with causality meta-data updated
-def make_hypothgraph(digraph=None):
-    digraph = digraph.copy() or get_digraph()
+def sample_hypothgraph(digraph=None):
+    if digraph:
+        digraph = digraph.copy()
+    else:
+        digraph = sample_digraph()
 
-    source, target = utils.random_endpoints(digraph)
+    hypothgraph = convert_to_hypothgraph.convert_to_hypothgraph(digraph)
 
-    # assign hypothesis configuration endpoints
-    for node in digraph.nodes_iter():
-        if node == source:
-            digraph.node[node]['hypo_source'] = 1
-
-        if node == target:
-            digraph.node[node]['hypo_target'] = 1
-
-    return digraph
+    return hypothgraph

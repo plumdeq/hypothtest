@@ -1,3 +1,4 @@
+.DS_Store
 *pyc
 build/*
 **/__pycache__
@@ -7,3 +8,4 @@ ontology/*
 **/.ropeproject
 catalog*xml
 ontology/benchmark/*
+.coverage
