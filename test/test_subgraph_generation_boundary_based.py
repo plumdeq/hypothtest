@@ -21,6 +21,7 @@ sys.path.insert(0, mypath)
 # configuration, as well as the percentage of the paths between the two nodes.
 # The graph generation would then try to give you a subgraph with the given
 # percentage of paths between the source and the target.
+import numpy as np
 import networkx as nx
 
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
@@ -91,3 +92,25 @@ def test_zero_on_boundary_paths(get_sample_hypothgraph):
     on_boundary_biggraph = boundary.on_boundary(hypothgraph, source, target)
 
     assert len(on_boundary_subgraph) == 0
+
+
+# If we produce subgraphs only from the paths from source to target then all
+# the produced subgraphs are sub hypothesis graphs of a bigger hypothesis graph,
+# i.e., preserve the boundary interior
+def test_boundary_interior_preserving(get_sample_hypothgraph):
+    hypothgraph = get_sample_hypothgraph
+    source, target = hypoth_conf.generate_rich_endpoints(hypothgraph)
+
+    # no on boundary paths
+    ratio_on_boundary_paths = 0
+
+    # we gradually increase the ratio, we should have at least one path from
+    # source to target
+    ratios = np.linspace(0.1, 1, 10)
+
+    for ratio in ratios:
+        new_subgraph = sub_hypothgraph.generate_sub_hypothgraph(
+                hypothgraph, source, target, ratio_endpoints_paths=ratio,
+                ratio_on_boundary_paths=ratio_on_boundary_paths)
+
+        assert boundary.is_sub_hypothgraph(new_subgraph, hypothgraph, source, target)
