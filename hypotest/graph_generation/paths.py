@@ -139,3 +139,25 @@ def take_ratio_boundary_paths_rand(hypothgraph, source, target, ratio=0.5):
             hypothgraph, on_boundary_nodes)
 
     return take_ratio_paths_rand(hypothgraph, boundary_paths, ratio=ratio)
+
+
+# # Paths via ending points
+#
+# These functions are needed for the subgraph generation based on the ratio of
+# all paths that PASS THROUGH the causal endpoints
+#
+def passing_via_endpoints(hypothgraph, source, target):
+    all_paths = chain_many_to_many_path_generator(hypothgraph, hypothgraph.nodes_iter())
+
+    for path in all_paths:
+        if source in path and target in path:
+            yield path
+
+
+# ## Paths via endpoints sorted
+def passing_via_endpoints_sorted(hypothgraph, source, target):
+    sorted_paths = list(passing_via_endpoints(hypothgraph, source, target))
+    sorted_paths = sorted(sorted_paths, key=len)
+
+    for path in sorted_paths:
+        yield path
