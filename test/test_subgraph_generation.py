@@ -68,3 +68,26 @@ def test_generate_subgraph(get_trivial_example):
     on_boundary_biggraph = boundary.on_boundary(hypothgraph, source, target)
 
     assert set(on_boundary_subgraph).issubset(set(on_boundary_biggraph))
+
+
+# Ratio of on-boundary-paths '0', should not contain any path to a on_boundary
+# node, however the boundary interior paths should be included in the boundary
+# interior of the bigger graph
+def test_zero_on_boundary_paths(get_sample_hypothgraph):
+    hypothgraph = get_sample_hypothgraph
+    source, target = hypoth_conf.generate_rich_endpoints(hypothgraph)
+
+    subgraph = sub_hypothgraph.generate_sub_hypothgraph(hypothgraph, source, target, ratio_on_boundary_paths=0)
+
+    # check boundary interior
+    boundary_interior_subgraph = list(boundary.in_boundary_interior(subgraph, source, target))
+    boundary_interior_biggraph = boundary.in_boundary_interior(hypothgraph, source, target)
+
+    assert len(boundary_interior_subgraph) > 0
+    assert set(boundary_interior_subgraph).issubset(set(boundary_interior_biggraph))
+
+    # check on boundary
+    on_boundary_subgraph = list(boundary.on_boundary(subgraph, source, target))
+    on_boundary_biggraph = boundary.on_boundary(hypothgraph, source, target)
+
+    assert len(on_boundary_subgraph) == 0
