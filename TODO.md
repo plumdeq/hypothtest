@@ -14,7 +14,8 @@ We collect all the items (e.g., features, bug fixes) that need to be done here
 * [x] test relative confidence sub to full on a sample hypothesis graph
 * [x] write subgraph to a dot language (based on grontocrawler)
 * [x] check uniqueness of paths when you generate graphs
-* [o] subgraphs should be generated as a ratio of all paths that pass through the selected nodes
-* [ ] test and add notes on monotonicity of relative confidence (can we have the same for the normalized confidence?)
-* [ ] test closest confidence to the max confidence given some constraints
+* [x] test and add notes on monotonicity of relative confidence (can we have the same for the normalized confidence?)
+* [ ] better endpoints generation, the pair of nodes should be chosen as the one that maximizes 'all_pairs_simple_paths'
+* [ ] subgraph generation should take into account the ratio of nodes in the boundary interior
 * [ ] partition the hypothesis graph based on the node sets for each of the partitions
+* [ ] test closest confidence to the max confidence given some constraints
