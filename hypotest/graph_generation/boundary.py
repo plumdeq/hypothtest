@@ -69,3 +69,21 @@ def partial_nodes_boundary_interior(hypothgraph, source, target):
         rand_ind = random.randint(0, total_boundary_nb)
         yield in_boundary[rand_ind]
         produced_nodes += 1
+
+
+# Based on the notion of boundary we can check if a smaller digraph is a sub
+# hypothesis graph of a bigger digraph. The same topology means the boundary
+# interior of the subgraph is subset or equal of the big graph. We don't care
+# about the `on_boundary` nodes
+def is_sub_hypothgraph(small_graph, big_graph, source, target):
+    boundary_interior_subgraph = list(in_boundary_interior(small_graph, source, target))
+    boundary_interior_biggraph = list(in_boundary_interior(big_graph, source, target))
+
+#    on_boundary_subgraph = list(on_boundary(small_graph, source, target))
+#    on_boundary_biggraph = list(on_boundary(big_graph, source, target))
+
+    subset_boundary_interior = set(boundary_interior_subgraph).issubset(set(boundary_interior_biggraph))
+#    subset_on_boundary = set(on_boundary_subgraph).issubset(set(on_boundary_biggraph))
+
+    # return subset_on_boundary and subset_boundary_interior
+    return subset_boundary_interior
