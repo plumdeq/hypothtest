@@ -42,4 +42,30 @@ def generate_sub_hypothgraph(hypothgraph, source, target,
     for on_boundary_path in on_boundary_paths:
         sub_hypothgraph.add_path(on_boundary_path)
 
+    # add data if required
+    sub_hypothgraph = copy_data_to_subgraph(hypothgraph, sub_hypothgraph)
+
     return sub_hypothgraph
+
+
+# Go through nodes and edges and coput data attributes, assumes that nodes and
+# edges exist in the big graph
+def copy_data_to_subgraph(big, small):
+    for small_node in small.nodes_iter():
+        if small_node in big.nodes_iter():
+            small.node[small_node] = big.node[small_node]
+        else:
+            print('{} is not in the big graph'.format(small_node))
+
+    # g.edge is one signle dictionary of type { 'source': { 'target': edge_dict
+    # } }
+    for small_edge in small.edges_iter():
+        u, v = small_edge
+
+        if u in big.edge:
+            if v in big.edge[u]:
+                small.edge[u][v] = big.edge[u][v]
+        else:
+            print('{} is not in the big graph'.format(small_edge))
+
+    return small
