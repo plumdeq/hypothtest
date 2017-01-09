@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='hypotest-conf-propagation',
-      version='1.3.0',
+      version='1.3.1',
       description='Hypothesis confidence propagation',
       author='Asan Agibetov',
       author_email='asan.agibetov@gmail.com',
