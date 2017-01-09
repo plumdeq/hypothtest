@@ -11,6 +11,10 @@
 
 import sys
 
+
+from hypotest.graph_generation import boundary
+
+
 # ## Styles
 #
 # Nodes of the big graph will have no shape (just label)
@@ -22,14 +26,26 @@ big_edge_style = '"%s" -> "%s" [label="%s",style="dashed"] ;\n'
 small_node_style = '"%s" [label="%s",shape="ellipse"] ;\n'
 small_edge_style = '"%s" -> "%s" [label="%s",style="bold"] ;\n'
 
+# If we have only one graph to draw then nodes are ellipses, i.e., `small_node_style`
+node_style = small_node_style
+
+# If we have only one graph to draw then edges are full, i.e., `small_edge_style`
+edge_style = small_edge_style
+
 # Causal endpoints are filled nodes
 endpoint_node_style = '"%s" [label="%s",shape="ellipse",style="filled",color="red"] ;\n'
 
+# Nodes in the boundary interior are filled blue
+boundary_interior_node_style = '"%s" [label="%s",shape="ellipse",style="filled", color="blue"] ;\n'
 
-# Creat `dot` from digraph representation of the subgraph. We need both the big
-# and the small graphs. We assume that `big, small` are `NetworkX` graphs
+# Evidenced nodes are filled green
+evidenced_node_style = '"%s" [label="%s",shape="ellipse",style="filled",color="green"] ;\n'
+
+
+# Creat `dot` from digraph representation of the subgraph and full graph.
+# We assume that `big, small` are `NetworkX` graphs
 #
-def to_dot(big, small, source, target, stream=sys.stdout):
+def big_small_to_dot(big, small, source, target, stream=sys.stdout):
     """
     (graph, graph, steram) -> string > stream
 
@@ -66,6 +82,61 @@ def to_dot(big, small, source, target, stream=sys.stdout):
             edge_str = small_edge_style
 
         stream.write(edge_str % (source, target, edge_data['label']))
+
+    stream.write('}\n')
+
+    return None
+
+
+# Write to dot one hypothesis graph by applying different styles to the
+# endpoints, evidenced nodes and the boundary nodes. You should also highlight
+# the paths from endpoints
+def hypothgraph_to_dot(hypothgraph, hypoth_conf, stream=sys.stdout):
+    """
+    (graph, hypoth_conf, stream) -> string > stream
+
+    Args:
+        - hypothgraph (networkx.DiGraph): Hypothesis graph
+        - hypoth_conf (hypo_conf.Hypoth_Conf): Hypothesis configuration
+
+            - source, target (nodes): Causal endpoints
+            - evidenced_nodes ([node...]): Evidenced nodes
+
+        - stream (default: sys.stdout | file): Where to write the output
+    Returns:
+        - (string -> stream): `dot` representation of the graph
+
+    """
+    # extract configuration of the confidence evaluation of a hypothesis
+    source, target, evidenced_nodes = hypoth_conf
+    boundary_interior_nodes = list(
+            boundary.in_boundary_interior(hypothgraph, source, target))
+
+    stream.write('digraph g {\n')
+
+    # Go through the nodes of the hypothesis graph and apply the right node
+    # styles
+    for (node, node_data) in hypothgraph.nodes_iter(data=True):
+        node_str = node_style
+
+        # precedence is `boundary_interior_node` < `endpoint_node` < `evidenced_node`
+        if node in boundary_interior_nodes:
+            node_str = boundary_interior_node_style
+
+        if node == source or node == target:
+            node_str = endpoint_node_style
+
+        if node in evidenced_nodes:
+            node_str = evidenced_node_style
+
+        stream.write(node_str % (node, node_data['label']))
+
+    # Go through the edges of the big graph, if the edge is in the small graph
+    # then apply `small_edge_style`, otherwise use `big_edge_style`
+    for (s, t, edge_data) in hypothgraph.edges_iter(data=True):
+        edge_str = edge_style
+
+        stream.write(edge_str % (s, t, edge_data['label']))
 
     stream.write('}\n')
 

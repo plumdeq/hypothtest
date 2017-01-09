@@ -42,8 +42,26 @@ def get_digraph_with_cycle():
 def test_generate_rich_endpoints(get_digraph_with_cycle):
     hypothgraph = get_digraph_with_cycle
 
+    min_nb_paths = 4
+
     # just run 100 tests
     for _ in xrange(100):
-        source, target = hypoth_conf.generate_rich_endpoints(hypothgraph)
+        source, target = hypoth_conf.generate_rich_endpoints(hypothgraph, min_nb_paths)
         all_simple_paths = list(nx.all_simple_paths(hypothgraph, source, target))
-        assert len(all_simple_paths) >= 2
+        assert len(all_simple_paths) >= min_nb_paths
+
+
+# Max endpoints (max_s, max_t) imply that there are no such two endpoints
+# (max_s', max_t') which would generate more simple paths than (max_s, max_t)
+# could.
+def test_generate_max_endpoints(get_digraph_with_cycle):
+    hypothgraph = get_digraph_with_cycle
+
+    source, target = hypoth_conf.generate_max_endpoints(hypothgraph)
+    nb_paths = len(list(nx.all_simple_paths(hypothgraph, source, target)))
+    max_nb_paths = nb_paths
+
+    for (u, v) in it.combinations(hypothgraph.nodes_iter(), 2):
+        nb_paths_i = len(list(nx.all_simple_paths(hypothgraph, u, v)))
+        if max_nb_paths < nb_paths_i:
+            assert False
