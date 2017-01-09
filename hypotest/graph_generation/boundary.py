@@ -18,6 +18,7 @@
 # anymore, since it is not defined on directed graphs with cycles
 import networkx as nx
 import random
+import math
 
 from hypotest.graph_generation import hypoth_conf
 
@@ -52,20 +53,28 @@ def on_boundary(hypothgraph, source, target):
     return on_boundary_nodes
 
 
-# We need to evidence only partial nodes in the interior of the boundary
-def partial_nodes_boundary_interior(hypothgraph, source, target):
-    partial_nb = 0
+# We need to evidence only partial nodes in the interior of the boundary, we
+# provide a ratio of boundary_interior nodes
+def partial_nodes_boundary_interior(hypothgraph, source, target, ratio_nodes=0.5):
+    in_boundary = list(in_boundary_interior(hypothgraph, source, target))
+    nb_nodes_to_produce = max(min(math.ceil(len(in_boundary) * ratio_nodes), len(in_boundary)), 0)
+    nb_nodes_to_produce = int(nb_nodes_to_produce)
 
-    while partial_nb <= 0:
-        in_boundary = list(in_boundary_interior(hypothgraph, source, target))
-        partial_nb = len(in_boundary)/2
+    # randomly pop out partial boundary interior nodes to the desired ratio
+    # nodes
+    for _ in range(nb_nodes_to_produce):
+        random_node = random.choice(in_boundary)
+        yield random_node
 
-    total_boundary_nb = len(in_boundary)-1
 
-    # we have at least one partial node to evidence, take some nodes while we
-    # reach the partial number of nodes
-    produced_nodes = 0
-    while produced_nodes != partial_nb:
-        rand_ind = random.randint(0, total_boundary_nb)
-        yield in_boundary[rand_ind]
-        produced_nodes += 1
+# Based on the notion of boundary we can check if a smaller digraph is a sub
+# hypothesis graph of a bigger digraph. The same topology means the boundary
+# interior of the subgraph is subset or equal of the big graph. We don't care
+# about the `on_boundary` nodes
+def is_sub_hypothgraph(small_graph, big_graph, source, target):
+    boundary_interior_subgraph = list(in_boundary_interior(small_graph, source, target))
+    boundary_interior_biggraph = list(in_boundary_interior(big_graph, source, target))
+
+    subset_boundary_interior = set(boundary_interior_subgraph).issubset(set(boundary_interior_biggraph))
+
+    return subset_boundary_interior

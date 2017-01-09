@@ -6,37 +6,14 @@
 import random
 import networkx as nx
 from collections import namedtuple
+import itertools as it
+from operator import itemgetter
 
 # ## Hypothesis configuration
 #
 # Hypothesis configuration is a tuple (source, target, evidenced_nodes) that
 # dictates how the confidence is measured
 Hypoth_Conf = namedtuple('Hypoth_Conf', ['source', 'target', 'evidenced_nodes'])
-
-
-# Boundary nodes drawn at random
-def random_hypoth_conf_endpoints(digraph):
-    """
-    (digraph) -> (source, target)
-
-    """
-    min_length = 0
-    max_length = len(digraph.nodes())-1
-
-    s_index = random.randint(min_length, max_length)
-    t_index = random.randint(min_length, max_length)
-
-    # convert indices in the array to ids in the graph
-    source = list(digraph.nodes_iter())[s_index]
-    target = list(digraph.nodes_iter())[t_index]
-
-    # recompute if source and target are the same, or if there is no path
-    # between them
-    if source == target or not nx.has_path(digraph, source, target):
-        return random_hypoth_conf_endpoints(digraph)
-
-    else:
-        return (source, target)
 
 
 # Given two nodes, we sort them topologically, we also check whether there is a
@@ -72,22 +49,71 @@ def sort_hypoth_conf_endpoints(hypothgraph, u, v):
 # the simple paths between `source` and `target`. While full will be
 # simulated with the maximul length path. We should make sure that there
 # are at least two paths of different path length between source and target
-def generate_rich_endpoints(hypothgraph):
-    simple_paths = []
+def generate_rich_endpoints(hypothgraph, min_nb_paths=1):
+    pairs = sorted_pairs(hypothgraph)
 
-    while len(simple_paths) < 2:
+    # if min_nb_paths > max: return the available max
+    max_pair = max(pairs, key=itemgetter(2))
 
-        source, target = random_hypoth_conf_endpoints(hypothgraph)
+    if min_nb_paths > max_pair[2]:
+        return (max_pair[0], max_pair[1])
 
-        simple_paths = list(nx.all_simple_paths(hypothgraph, source, target))
+    remaining_pairs = list(it.dropwhile(lambda pair: pair[2] < min_nb_paths, pairs))
+
+    random_pair =  random.choice(remaining_pairs)
+
+    return (random_pair[0], random_pair[1])
+
+# Sort all pairs of nodes and return the pair which maximizes the number of
+# paths
+def generate_max_endpoints(hypothgraph):
+    pairs = sorted_pairs(hypothgraph)
+    endpoints = max(pairs, key=itemgetter(2))
+
+    return (endpoints[0], endpoints[1])
 
 
-    return source, target
+## Sort all pairs of nodes according to the number of simple paths between them
+def sorted_pairs(hypothgraph):
+    """Sort all pairs of nodes according to the number of simple paths between them"""
+    # list of tuples [(u, v, number_of_paths), ... ]
+    pairs = []
+
+    for u, v in it.combinations(hypothgraph.nodes_iter(), 2):
+        nb_paths_i = len(list(nx.all_simple_paths(hypothgraph, u, v)))
+        pairs.append((u, v, nb_paths_i))
+
+    return sorted(pairs, key=itemgetter(2))
 
 
 # -------------
 # ## DEPRECATED
 # -------------
+# Boundary nodes drawn at random
+def random_hypoth_conf_endpoints(digraph):
+    """
+    (digraph) -> (source, target)
+
+    """
+    min_length = 0
+    max_length = len(digraph.nodes())-1
+
+    s_index = random.randint(min_length, max_length)
+    t_index = random.randint(min_length, max_length)
+
+    # convert indices in the array to ids in the graph
+    source = list(digraph.nodes_iter())[s_index]
+    target = list(digraph.nodes_iter())[t_index]
+
+    # recompute if source and target are the same, or if there is no path
+    # between them
+    if source == target or not nx.has_path(digraph, source, target):
+        return random_hypoth_conf_endpoints(digraph)
+
+    else:
+        return (source, target)
+
+
 
 # Unassign any assigned boundary
 def unassign_boundary(hypothgraph):
