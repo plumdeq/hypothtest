@@ -15,8 +15,7 @@ We collect all the items (e.g., features, bug fixes) that need to be done here
 * [x] write subgraph to a dot language (based on grontocrawler)
 * [x] check uniqueness of paths when you generate graphs
 * [x] test and add notes on monotonicity of relative confidence (can we have the same for the normalized confidence?)
+* [x] better endpoints generation, the pair of nodes should be chosen as the one that maximizes 'all_pairs_simple_paths'
 * [o] `write to dot` should produce separate diagrams for: subgraph alone, full graph alone, superimposed subgraph and full graph
-* [o] better endpoints generation, the pair of nodes should be chosen as the one that maximizes 'all_pairs_simple_paths'
-* [ ] subgraph generation should take into account the ratio of nodes in the boundary interior
 * [ ] partition the hypothesis graph based on the node sets for each of the partitions
 * [ ] test closest confidence to the max confidence given some constraints
