@@ -4,6 +4,7 @@ We collect all the items (e.g., features, bug fixes) that need to be done here
 
 ## Semantic rules for hypothesis graph normalization
 
+* [o] application of simplest graph patterns `occ_1 -- neg regulation -> occ_2 => occ_1 -- results in -> negative regulation of occ_2`
 * [ ] conversion of axioms of type *occurrent* `reduces levels of` some *molecule*
 * [ ] double relations of type *occurrent* `negatively o positively = negatively` *occurrent*
 
