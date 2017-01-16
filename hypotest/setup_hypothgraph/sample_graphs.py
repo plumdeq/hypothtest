@@ -11,6 +11,7 @@
 from hypotest.setup_hypothgraph import convert_to_hypothgraph
 
 from grontocrawler.sample_ontology.hypo_ontology import g
+from grontocrawler.sample_ontology.hypo_ontology_unnormalized import g as unnormalized_g
 from grontocrawler.graph import produce_graph
 
 
@@ -29,3 +30,9 @@ def sample_hypothgraph(digraph=None):
     hypothgraph = convert_to_hypothgraph.convert_to_hypothgraph(digraph)
 
     return hypothgraph
+
+
+def sample_unnormalized():
+    digraph = produce_graph.produce_graph(unnormalized_g, options=['existential-arcs'])
+
+    return digraph
