@@ -9,3 +9,6 @@ ontology/*
 catalog*xml
 ontology/benchmark/*
 .coverage
+notebooks/.ipynb_checkpoints
+notebooks/images
+notebooks/converted

@@ -121,13 +121,13 @@ def confidence(hypothgraph, hypoth_conf,
         for simple_path in simple_paths
     ]
 
-    nb_paths = len(weighted_path_values)
+    # nb_paths = len(weighted_path_values)
 
     if log:
         print("confidence measures are {}".format(confidence_measures))
 
-    return sum(weighted_path_values)/float(nb_paths)
-
+    # return sum(weighted_path_values)/float(nb_paths)
+    return float(sum(weighted_path_values))
 
 # Max confidence we can get wrt. hypothesis configuration. We evidence all the
 # nodes in the path and compute its maximum possible confidence.
@@ -151,10 +151,10 @@ def max_confidence(hypothgraph, source, target,
         for simple_path in simple_paths
     ]
 
-    nb_paths = len(max_weighted_path_values)
+    # nb_paths = len(max_weighted_path_values)
 
-    return sum(max_weighted_path_values)/float(nb_paths)
-
+    # return sum(max_weighted_path_values)/float(nb_paths)
+    return float(sum(max_weighted_path_values))
 
 # Normalized confidence is our confidence normalized by the max possible
 # confidence
