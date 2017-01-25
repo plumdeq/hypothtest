@@ -34,11 +34,12 @@ We collect all the items (e.g., features, bug fixes) that need to be done here
 * [x] test relative confidence sub to full on a sample hypothesis graph
 * [x] test and add notes on monotonicity of relative confidence (can we have the same for the normalized confidence?)
 * [ ] test closest confidence to the max confidence given some constraints
-* [o] compute confidence measure function as a mean value for the increasing number of evidenced nodes
+* [x] compute confidence measure function as a mean value for the increasing number of evidenced nodes
+* [o] update confidence computation with a custom node weighting function 
 
-## Results for the paper
+## Results for the paper (notebook)
 
-* [ ] Relative confidence for subgraph on molecular level and the full graph
+* [x] Relative confidence for subgraph on molecular level and the full graph
 * [ ] Custom weighting scheme
 * [ ] Local importance
 * [ ] Inference procedures

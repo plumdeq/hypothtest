@@ -53,8 +53,8 @@ def confidences_possibilities(hypothgraph, source, target,
 
 # Compute the possible spectrum of mean confidences for the gradually
 # increasing number of evidenced nodes
-def mean_confidence_spectrum(hypothgraph, source, target, normalized=False):
-    mean_confidences = []
+def confidence_spectrum(hypothgraph, source, target, normalized=False):
+    spectrum = []
 
     # all nodes in the boundary interior
     interior = list(boundary.in_boundary_interior(hypothgraph, source, target))
@@ -66,10 +66,12 @@ def mean_confidence_spectrum(hypothgraph, source, target, normalized=False):
                 number_of_evidence_possibilities,
                 normalized=normalized)
 
-        mean_confidence = sum(confidences)/float(len(confidences))
-        mean_confidences.append(mean_confidence)
+        spectrum.append(confidences)
 
-    return mean_confidences
+        # mean_confidence = sum(confidences)/float(len(confidences))
+        # mean_confidences.append(mean_confidence)
+
+    return spectrum
 
 
 # #################################
@@ -78,7 +80,7 @@ def mean_confidence_spectrum(hypothgraph, source, target, normalized=False):
 
 # Compute the possible spectrum of confidences for the gradually
 # increasing number of evidenced nodes
-def confidence_spectrum(hypothgraph, source, target, normalized=False):
+def old_confidence_spectrum(hypothgraph, source, target, normalized=False):
     evidenced_nodes = []
     confidences = []
     iterative_hypoth_conf = Hypoth_Conf(source, target, evidenced_nodes)
