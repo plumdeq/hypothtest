@@ -12,8 +12,11 @@ import itertools as it
 from hypotest.confidence import compute_confidence
 from hypotest.graph_generation import boundary, hypoth_conf
 
+from functools import partial
+
 
 Hypoth_Conf = hypoth_conf.Hypoth_Conf
+def_func_import = compute_confidence.default_node_importance_measure
 
 
 # Add gradually nodes from the boundary interior and evaluate the confidence
@@ -21,7 +24,8 @@ Hypoth_Conf = hypoth_conf.Hypoth_Conf
 # compute mean confidence for a number of evidenced nodes mean(|E| = 1..N) etc.
 #
 def confidences_possibilities(hypothgraph, source, target,
-                              number_of_evidenced, normalized=False):
+                              number_of_evidenced, normalized=False,
+                              func_importance=def_func_import):
     """
     (graph, node, node, list, bool) -> list[confidence_for_possibility]
 
@@ -37,9 +41,12 @@ def confidences_possibilities(hypothgraph, source, target,
     confidences = []
 
     # which type of confidence are we computing, normalized or not
-    func_confidence = compute_confidence.confidence
+    func_confidence = partial(
+            compute_confidence.confidence, func_importance=func_importance)
     if normalized:
-        func_confidence = compute_confidence.normalized_confidence
+        func_confidence = partial(
+                compute_confidence.normalized_confidence,
+                func_importance=func_importance)
 
     # take combinations of interior nodes for the required number of evidenced
     # nodes
@@ -53,7 +60,9 @@ def confidences_possibilities(hypothgraph, source, target,
 
 # Compute the possible spectrum of mean confidences for the gradually
 # increasing number of evidenced nodes
-def confidence_spectrum(hypothgraph, source, target, normalized=False):
+def confidence_spectrum(hypothgraph, source, target,
+                        normalized=False,
+                        func_importance=def_func_import):
     spectrum = []
 
     # all nodes in the boundary interior
@@ -64,7 +73,8 @@ def confidence_spectrum(hypothgraph, source, target, normalized=False):
         confidences = confidences_possibilities(
                 hypothgraph, source, target,
                 number_of_evidence_possibilities,
-                normalized=normalized)
+                normalized=normalized,
+                func_importance=func_importance)
 
         spectrum.append(confidences)
 
