@@ -7,6 +7,8 @@
 #
 # Given a hypothesis graph and the causal endpoints we compute the full
 # spectrum of confidences based on nodes in the boundary interior.
+import itertools as it
+
 from hypotest.confidence import compute_confidence
 from hypotest.graph_generation import boundary, hypoth_conf
 
@@ -15,6 +17,67 @@ Hypoth_Conf = hypoth_conf.Hypoth_Conf
 
 
 # Add gradually nodes from the boundary interior and evaluate the confidence
+# However, since there might be a choice of which nodes to evidence, we need to
+# compute mean confidence for a number of evidenced nodes mean(|E| = 1..N) etc.
+#
+def confidences_possibilities(hypothgraph, source, target,
+                              number_of_evidenced, normalized=False):
+    """
+    (graph, node, node, list, bool) -> list[confidence_for_possibility]
+
+    """
+    # base case when we have no evidences, it is zero
+    if number_of_evidenced == 0:
+        return [0.0]
+
+    # all nodes which potentially need to be evidenced
+    interior_nodes = boundary.in_boundary_interior(hypothgraph, source, target)
+
+    # we accumulate confidence values here
+    confidences = []
+
+    # which type of confidence are we computing, normalized or not
+    func_confidence = compute_confidence.confidence
+    if normalized:
+        func_confidence = compute_confidence.normalized_confidence
+
+    # take combinations of interior nodes for the required number of evidenced
+    # nodes
+    for evidenced_possibility in it.combinations(interior_nodes, number_of_evidenced):
+        # make a hypothesis configuration
+        new_conf = Hypoth_Conf(source, target, evidenced_possibility)
+        confidences.append(func_confidence(hypothgraph, new_conf))
+
+    return confidences
+
+
+# Compute the possible spectrum of mean confidences for the gradually
+# increasing number of evidenced nodes
+def mean_confidence_spectrum(hypothgraph, source, target, normalized=False):
+    mean_confidences = []
+
+    # all nodes in the boundary interior
+    interior = list(boundary.in_boundary_interior(hypothgraph, source, target))
+
+    # from zero to full number of potential evidences
+    for number_of_evidence_possibilities in range(len(interior) + 1):
+        confidences = confidences_possibilities(
+                hypothgraph, source, target,
+                number_of_evidence_possibilities,
+                normalized=normalized)
+
+        mean_confidence = sum(confidences)/float(len(confidences))
+        mean_confidences.append(mean_confidence)
+
+    return mean_confidences
+
+
+# #################################
+# DEPRECATED
+# #################################
+
+# Compute the possible spectrum of confidences for the gradually
+# increasing number of evidenced nodes
 def confidence_spectrum(hypothgraph, source, target, normalized=False):
     evidenced_nodes = []
     confidences = []
