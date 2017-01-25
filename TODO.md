@@ -2,6 +2,11 @@
 
 We collect all the items (e.g., features, bug fixes) that need to be done here
 
+## Sample hypothesis ontologies
+
+* [o] define manually a good subgraph
+* [ ] in the universal hypothesis graph check `cartilage degeneration` it has duplicate definitions
+
 ## Semantic rules for hypothesis graph normalization
 
 * [x] application of simplest graph patterns `occ_1 -- neg regulation -> occ_2 => occ_1 -- results in -> negative regulation of occ_2`
