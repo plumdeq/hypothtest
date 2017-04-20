@@ -40,6 +40,6 @@ We collect all the items (e.g., features, bug fixes) that need to be done here
 ## Results for the paper (notebook)
 
 * [x] Relative confidence for subgraph on molecular level and the full graph
-* [ ] Custom weighting scheme
-* [ ] Local importance
-* [ ] Inference procedures
+* [x] Custom weighting scheme
+* [x] Local importance
+* [x] Inference procedures
