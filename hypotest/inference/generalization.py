@@ -1,5 +1,21 @@
 # coding: utf8
 """
+author: Asan Agibetov
+
+   Copyright 2015-2017 Asan Agibetov <asan.agibetov@gmail.com>
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
 Perform experiments
 
 For a given configuration of a hypothesis, try the following experiments:
@@ -9,8 +25,6 @@ For a given configuration of a hypothesis, try the following experiments:
 2) For given evidenced nodes, find the best endpoints (given the confidence
    function)
 3) For a given threshold of confidence, find the best hypothesis configuration
-
-:author: Asan Agibetov
 
 """
 import networkx as nx
