@@ -18,12 +18,13 @@ information.
 So we start off with an ontology which models a certain hypothesis of causality
 relationships among the factors. This library, takes on input a DIGRAPH
 (networkx format) as output of the ontology to graph transformation from
-Grontocrawler.  In this piece of code we update the graph with computed
-parameters, such as importance metrics. Then, the augmented graph with meta
-data is sent to the backend. The backend code of `hypotest` then, serves the
-augmented graph with computed parameters to the frontend. And the frontend is
-responsible for the visualization of the network, and for the treatment of the
-user input that are transformed into the `http` queries.
+[Grontocrawler (dependency of this prototype)][grontocrawler].  In this piece
+of code we update the graph with computed parameters, such as importance
+metrics. Then, the augmented graph with meta data is sent to the backend. The
+backend code of `hypotest` then, serves the augmented graph with computed
+parameters to the frontend. And the frontend is responsible for the
+visualization of the network, and for the treatment of the user input that are
+transformed into the `http` queries.
 
 * [prototype (link)][hypothtest]
 
@@ -31,6 +32,14 @@ user input that are transformed into the `http` queries.
 
 * Agibetov, Asan, E. Jiménez-Ruiz, A. Solimando, G. Guerrini, G. Patanè, and M. Spagnuolo. 2015. “Towards Shared Hypothesis Testing in the Biomedical Domain.” In *Proceedings of SWAT4LS International Conference 2015*, 1546:33–37. Cambridge, UK: CEUR-WS.org. <http://ceur-ws.org/Vol-1546/paper_16.pdf>.
 * Agibetov, Asan, E. Jiménez-Ruiz, M. Ondresik, A. Solimando, G. Guerrini, C-E. Catalano, J-M. Oliveira, Giuseppe Patanè, R-L. Reis and Michela Spagnuolo. June 2016. “Supporting Shared Hypothesis Testing in the Biomedical Domain.” Submitted to Journal of Biomedical Semantics.
+
+## Reproducibility of experiments
+
+Experiments presented in the `Agibetov, Asan, E. Jiménez-Ruiz, M. Ondresik, A.
+Solimando, G. Guerrini, C-E. Catalano, J-M. Oliveira, Giuseppe Patanè, R-L.
+Reis and Michela Spagnuolo. June 2016. “Supporting Shared Hypothesis Testing in
+the Biomedical Domain.” Submitted to Journal of Biomedical Semantics.` are
+reproducible with [Jupyter Notebooks][jupyter] located in the `notebooks` folder.
 
 ## Online presentations
 
@@ -49,6 +58,9 @@ user input that are transformed into the `http` queries.
 [hypothtest]: http://hypothtest.plumdeq.xyz/test/
 [swat4ls2015]: http://asan.agibetov.me/talks/swat4ls2015
 [oslo_seminar2017]: http://asan.agibetov.me/talks/oslo2017
+[grontocrawler]: https://github.com/plumdeq/grontocrawler
+[jupyter]: http://jupyter.org
+
 
 ## CHANGELOG
 
