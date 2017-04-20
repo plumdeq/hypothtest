@@ -1,21 +1,112 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# author: Asan Agibetov
+"""
+author: Asan Agibetov
+
+   Copyright 2015-2017 Asan Agibetov <asan.agibetov@gmail.com>
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 #
 # # Computing confidences for a given hypothesis graph
 #
 # Given a hypothesis graph and the causal endpoints we compute the full
 # spectrum of confidences based on nodes in the boundary interior.
+import itertools as it
+
 from hypotest.confidence import compute_confidence
 from hypotest.graph_generation import boundary, hypoth_conf
 
+from functools import partial
+
 
 Hypoth_Conf = hypoth_conf.Hypoth_Conf
+def_func_import = compute_confidence.default_node_importance_measure
 
 
 # Add gradually nodes from the boundary interior and evaluate the confidence
-def confidence_spectrum(hypothgraph, source, target, normalized=False):
+# However, since there might be a choice of which nodes to evidence, we need to
+# compute mean confidence for a number of evidenced nodes mean(|E| = 1..N) etc.
+#
+def confidences_possibilities(hypothgraph, source, target,
+                              number_of_evidenced, normalized=False,
+                              func_importance=def_func_import):
+    """
+    (graph, node, node, list, bool) -> list[confidence_for_possibility]
+
+    """
+    # base case when we have no evidences, it is zero
+    if number_of_evidenced == 0:
+        return [0.0]
+
+    # all nodes which potentially need to be evidenced
+    interior_nodes = boundary.in_boundary_interior(hypothgraph, source, target)
+
+    # we accumulate confidence values here
+    confidences = []
+
+    # which type of confidence are we computing, normalized or not
+    func_confidence = partial(
+            compute_confidence.confidence, func_importance=func_importance)
+    if normalized:
+        func_confidence = partial(
+                compute_confidence.normalized_confidence,
+                func_importance=func_importance)
+
+    # take combinations of interior nodes for the required number of evidenced
+    # nodes
+    for evidenced_possibility in it.combinations(interior_nodes, number_of_evidenced):
+        # make a hypothesis configuration
+        new_conf = Hypoth_Conf(source, target, evidenced_possibility)
+        confidences.append(func_confidence(hypothgraph, new_conf))
+
+    return confidences
+
+
+# Compute the possible spectrum of mean confidences for the gradually
+# increasing number of evidenced nodes
+def confidence_spectrum(hypothgraph, source, target,
+                        normalized=False,
+                        func_importance=def_func_import):
+    spectrum = []
+
+    # all nodes in the boundary interior
+    interior = list(boundary.in_boundary_interior(hypothgraph, source, target))
+
+    # from zero to full number of potential evidences
+    for number_of_evidence_possibilities in range(len(interior) + 1):
+        confidences = confidences_possibilities(
+                hypothgraph, source, target,
+                number_of_evidence_possibilities,
+                normalized=normalized,
+                func_importance=func_importance)
+
+        spectrum.append(confidences)
+
+        # mean_confidence = sum(confidences)/float(len(confidences))
+        # mean_confidences.append(mean_confidence)
+
+    return spectrum
+
+
+# #################################
+# DEPRECATED
+# #################################
+
+# Compute the possible spectrum of confidences for the gradually
+# increasing number of evidenced nodes
+def old_confidence_spectrum(hypothgraph, source, target, normalized=False):
     evidenced_nodes = []
     confidences = []
     iterative_hypoth_conf = Hypoth_Conf(source, target, evidenced_nodes)

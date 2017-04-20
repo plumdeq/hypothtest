@@ -1,0 +1,132 @@
+@prefix hypo: <http://plumdeq.xyz/ontologies/hypothesis/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+hypo:Condition a owl:Class ;
+    rdfs:comment "Medical condition. Could be a pathology or a disorder" .
+
+hypo:causes a owl:ObjectProperty ;
+    rdfs:domain hypo:Occurent ;
+    rdfs:range hypo:Occurent .
+
+hypo:identifier a owl:Ontology ;
+    rdfs:comment "defined by: Asan Agibetov, Marta Ondresik, Ernesto Jimenez-Ruiz" .
+
+hypo:Aggrecanases_production a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Loss_of_proteoglycan ],
+        hypo:Occurent .
+
+hypo:Cartilage_degeneration a owl:Class ;
+    rdfs:comment "Cartilage degeneration is a generic process where the surface of cartilage is being degenerated" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Synovial_inflammation ],
+        hypo:Occurent .
+
+hypo:Chondrocytes_anabolic_activity a owl:Class ;
+    rdfs:comment "Chondrocytes anabolic activity is the process of construction of molecules from smaller units" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:positively_regulates ;
+            owl:someValuesFrom hypo:Collagen_production ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:positively_regulates ;
+            owl:someValuesFrom hypo:Proteoglycan_production ],
+        hypo:Occurent .
+
+hypo:Chondrocytes_catabolic_activity a owl:Class ;
+    rdfs:comment "Chondrocytes catabolic activity is the process of separation of molecules. Opposite of chondrocytes anabolism" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:positively_regulates ;
+            owl:someValuesFrom hypo:MMP13_production ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Loss_of_proteoglycan ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:positively_regulates ;
+            owl:someValuesFrom hypo:Aggrecanases_production ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Loss_of_collagen ],
+        hypo:Occurent .
+
+hypo:MMP13_production a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Loss_of_collagen ],
+        hypo:Occurent .
+
+hypo:Synovial_inflammation a owl:Class ;
+    rdfs:comment "Inflammation in a synovial joint" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:TNF_alpha_overproduction ],
+        hypo:Occurent .
+
+hypo:TNF_alpha_overproduction a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:negatively_regulates ;
+            owl:someValuesFrom hypo:Proteoglycan_production ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Loss_of_collagen ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Loss_of_proteoglycan ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:negatively_regulates ;
+            owl:someValuesFrom hypo:Chondrocytes_anabolic_activity ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:negatively_regulates ;
+            owl:someValuesFrom hypo:Collagen_production ],
+        [ a owl:Restriction ;
+            owl:onProperty hypo:positively_regulates ;
+            owl:someValuesFrom hypo:Chondrocytes_catabolic_activity ],
+        hypo:Occurent .
+
+hypo:Biochemical_imbalance a owl:Class ;
+    rdfs:comment "Biochemical imbalance in the cartilage" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Cartilage_degeneration ],
+        hypo:Occurent .
+
+hypo:Collagen_production a owl:Class ;
+    rdfs:subClassOf hypo:Occurent .
+
+hypo:Proteoglycan_production a owl:Class ;
+    rdfs:subClassOf hypo:Occurent .
+
+hypo:Loss_of_collagen a owl:Class ;
+    rdfs:comment "Loss of collagen molecules, a process which reduces the levels of collagen molecules" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Biochemical_imbalance ],
+        hypo:Occurent .
+
+hypo:Loss_of_proteoglycan a owl:Class ;
+    rdfs:comment "Loss of proteoglycan molecules, a process which reduces the levels of proteoglycan molecules" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty hypo:results_in ;
+            owl:someValuesFrom hypo:Biochemical_imbalance ],
+        hypo:Occurent .
+
+hypo:negatively_regulates a owl:ObjectProperty ;
+    rdfs:domain hypo:Occurent ;
+    rdfs:range hypo:Occurent .
+
+hypo:positively_regulates a owl:ObjectProperty ;
+    rdfs:domain hypo:Occurent ;
+    rdfs:range hypo:Occurent .
+
+hypo:results_in a owl:ObjectProperty ;
+    rdfs:domain hypo:Occurent ;
+    rdfs:range hypo:Occurent .
+
+hypo:Occurent a owl:Class ;
+    rdfs:comment "Occuring processes, which start and end at some point" .
+
