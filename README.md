@@ -33,14 +33,6 @@ transformed into the `http` queries.
 * Agibetov, Asan, E. Jiménez-Ruiz, A. Solimando, G. Guerrini, G. Patanè, and M. Spagnuolo. 2015. “Towards Shared Hypothesis Testing in the Biomedical Domain.” In *Proceedings of SWAT4LS International Conference 2015*, 1546:33–37. Cambridge, UK: CEUR-WS.org. <http://ceur-ws.org/Vol-1546/paper_16.pdf>.
 * Agibetov, Asan, E. Jiménez-Ruiz, M. Ondresik, A. Solimando, G. Guerrini, C-E. Catalano, J-M. Oliveira, Giuseppe Patanè, R-L. Reis and Michela Spagnuolo. June 2016. “Supporting Shared Hypothesis Testing in the Biomedical Domain.” Submitted to Journal of Biomedical Semantics.
 
-## Reproducibility of experiments
-
-Experiments presented in the `Agibetov, Asan, E. Jiménez-Ruiz, M. Ondresik, A.
-Solimando, G. Guerrini, C-E. Catalano, J-M. Oliveira, Giuseppe Patanè, R-L.
-Reis and Michela Spagnuolo. June 2016. “Supporting Shared Hypothesis Testing in
-the Biomedical Domain.” Submitted to Journal of Biomedical Semantics.` are
-reproducible with [Jupyter Notebooks][jupyter] located in the `notebooks` folder.
-
 ## Online presentations
 
 * [Intertnational conference on Semantic Web Application and Tools for Life Sciences (SWAT4LS) 2015 presentation][swat4ls2015]
@@ -55,11 +47,52 @@ reproducible with [Jupyter Notebooks][jupyter] located in the `notebooks` folder
 * Can be applied to any complex domain where the *causal information* is
   important (see last slide of the Oslo seminar)
 
+## INSTALL
+
+`Hypothtest` has been tested on Mac OS X (Yosemite) and Windows 10. Please use
+[pip][pip] to install dependencies. 
+
+```bash
+pip install -r requirements.txt # use `requirements_win.txt` on Windows
+python setup.py [develop] # `develop` will not put all the files in the specific `site-packages` on your system
+```
+
+`Hypothtest` depends on [Grontocrawler (link to GitHub)][grontocrawler], which
+you need to install yourself!
+
+### TEST
+
+Once you have `Hypothtest`, and `Grontocrawler` on your `PATH` environment
+variable, i.e., you have installed it on your system, you could run tests with
+`pytest`
+
+```
+pytest test
+```
+
+## USAGE
+
+See `./scripts` folder for different use-cases of `Hypotest`, those Python
+scripts can be invoked from the command-line with arguments. Refer to the paper
+and online presentation for the general overview and the description of
+`Hypotest`.
+
+### Reproducibility of experiments
+
+Experiments presented in the `Agibetov, Asan, E. Jiménez-Ruiz, M. Ondresik, A.
+Solimando, G. Guerrini, C-E. Catalano, J-M. Oliveira, Giuseppe Patanè, R-L.
+Reis and Michela Spagnuolo. June 2016. “Supporting Shared Hypothesis Testing in
+the Biomedical Domain.” Submitted to Journal of Biomedical Semantics.` are
+reproducible with [Jupyter Notebooks][jupyter] located in the `notebooks`
+folder. Running Jupyter Notebooks is the best way to see how `Hypotest` can be
+used.
+
 [hypothtest]: http://hypothtest.plumdeq.xyz/test/
 [swat4ls2015]: http://asan.agibetov.me/talks/swat4ls2015
 [oslo_seminar2017]: http://asan.agibetov.me/talks/oslo2017
 [grontocrawler]: https://github.com/plumdeq/grontocrawler
 [jupyter]: http://jupyter.org
+[pip]: https://packaging.python.org/installing/
 
 
 ## CHANGELOG
